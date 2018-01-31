@@ -24,4 +24,13 @@ public class Constants
 			public static final int RIGHT_TRIGGER = 3;
 			public static final int RIGHT_X = 4;
 			public static final int RIGHT_Y = 5;
+	//Robot Ports
+		//PWM
+			public static final int LEFT_DRIVE_CONTROLLER_PORT = 0;
+			public static final int RIGHT_DRIVE_CONTROLER_PORT = 1;
+		//DIO
+			public static final int LEFT_DRIVE_ENCODER_PORT_A = 0;
+			public static final int LEFT_DRIVE_ENCODER_PORT_B = 1;
+			public static final int RIGHT_DRIVE_ENCODER_PORT_A = 7;
+			public static final int RIGHT_DRIVE_ENCODER_PORT_B = 8;
 }
