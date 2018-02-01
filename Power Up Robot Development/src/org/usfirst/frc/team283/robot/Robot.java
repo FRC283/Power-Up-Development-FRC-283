@@ -65,5 +65,6 @@ public class Robot extends IterativeRobot
 	{
 		drivetrain.drive(logitech.getRawAxis(Constants.LEFT_Y), logitech.getRawAxis(Constants.RIGHT_Y),(logitech.getRawAxis(Constants.RIGHT_TRIGGER) >= 0.5));
 		SmartDashboard.putNumber("Voltage", pdp.getVoltage());
+		SmartDashboard.putNumber("775 Motor Current", drivetrain.pdp.getCurrent(12));
 	}
 }
