@@ -7,9 +7,9 @@ public class Arm
 {
 	Spark roller;
 	Solenoid gripSol;
-	public Arm()
+	public Arm(int sparkPort, int solenoidPort)
 	{
-		roller = new Spark(0);
-		gripSol = new Solenoid(0);
+		roller = new Spark(sparkPort);
+		gripSol = new Solenoid(solenoidPort);
 	}
 }
