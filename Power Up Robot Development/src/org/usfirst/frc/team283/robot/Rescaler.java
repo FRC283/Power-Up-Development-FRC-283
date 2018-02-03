@@ -16,6 +16,7 @@ public class Rescaler
 	{
 		return rescale(deadzone, 1, 0, 1, value);
 	}
+	
 	public static double rescale(double lowero, double uppero, double lowern, double uppern, double value)
 	{
 		boolean neg = false;

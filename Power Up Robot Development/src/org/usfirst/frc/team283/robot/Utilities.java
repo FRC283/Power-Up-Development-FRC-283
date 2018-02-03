@@ -14,8 +14,12 @@ import java.util.Date;
 
 import javax.imageio.ImageIO;
 
-public class Scheme
+import org.usfirst.frc.team283.robot.Scheme.Schema;
+import org.usfirst.frc.team283.robot.Scheme.Schemas;
+
+public class Utilities 
 {
+	
 	public static void main(String[] args)
 	{
 		Scheme s = new Scheme("PowerUp", "org.usfirst.frc.team283.napalm.DriveSubsystem", "org.usfirst.frc.team283.napalm.LiftSubsystem");
@@ -116,7 +120,7 @@ public class Scheme
 	 * @param classNames - List of class names
 	 * @param title - Name of robot
 	 */
-	Scheme(String title, String... classNames)
+	Utilities(String title, String... classNames)
 	{
 		this.robotName = title;
 		for (int i = 0; i < classNames.length; i++)
@@ -138,7 +142,7 @@ public class Scheme
 	 * @param classInstances - List of objects of desired classes
 	 * @param title - printed at the top of schema
 	 */
-	Scheme(String title, Object... classInstances)
+	Utilities(String title, Object... classInstances)
 	{
 		for (int i = 0; i < classInstances.length; i++)
 		{
@@ -220,5 +224,43 @@ public class Scheme
 			e.printStackTrace();
 		}
 	    System.out.println("<=== End Generation ===>");
+	}
+	/**
+	 * Shortcut for using the rescaler with a deadzone
+	 * @param value - value to be rescaled
+	 * @param deadzone - abs of deadzone e.g. 0.1
+	 * @return - new value
+	 */
+	public static double deadzone(double value, double deadzone)
+	{
+		return rescale(deadzone, 1, 0, 1, value);
+	}
+	
+	public static double rescale(double lowero, double uppero, double lowern, double uppern, double value)
+	{
+		boolean neg = false;
+		double rescaledValue = 0;	//Rescaled Value = number to be returned
+		if (value < 0)
+		{
+				neg = true;
+				value *= -1;
+		}
+		double oldscale = uppero - lowero;
+		double newscale = uppern - lowern;
+
+		rescaledValue = value - lowero;
+		rescaledValue /= oldscale;
+		rescaledValue *= newscale;
+		rescaledValue += lowern;
+
+		if (rescaledValue < 0)
+		{
+			rescaledValue = 0;
+		}
+		if (neg == true)
+		{
+			rescaledValue *= -1;
+		}
+		return rescaledValue;
 	}
 }
