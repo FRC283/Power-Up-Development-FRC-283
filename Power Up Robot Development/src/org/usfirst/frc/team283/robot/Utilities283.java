@@ -14,16 +14,12 @@ import java.util.Date;
 
 import javax.imageio.ImageIO;
 
-import org.usfirst.frc.team283.robot.Scheme.Schema;
-import org.usfirst.frc.team283.robot.Scheme.Schemas;
-
-public class Utilities 
+public class Utilities283
 {
 	
 	public static void main(String[] args)
 	{
-		Scheme s = new Scheme("PowerUp", "org.usfirst.frc.team283.napalm.DriveSubsystem", "org.usfirst.frc.team283.napalm.LiftSubsystem");
-		s.generate();
+		new Scheme("PowerUp", "org.usfirst.frc.team283.napalm.DriveSubsystem", "org.usfirst.frc.team283.napalm.LiftSubsystem");
 	}
 	
 	//Logitech Ports (Default)
@@ -120,7 +116,7 @@ public class Utilities
 	 * @param classNames - List of class names
 	 * @param title - Name of robot
 	 */
-	Utilities(String title, String... classNames)
+	Utilities283(String title, String... classNames)
 	{
 		this.robotName = title;
 		for (int i = 0; i < classNames.length; i++)
@@ -134,6 +130,7 @@ public class Utilities
 				e.printStackTrace();
 			}
 		}
+		generate();
 	}
 	
 	/**
@@ -142,12 +139,13 @@ public class Utilities
 	 * @param classInstances - List of objects of desired classes
 	 * @param title - printed at the top of schema
 	 */
-	Utilities(String title, Object... classInstances)
+	Utilities283(String title, Object... classInstances)
 	{
 		for (int i = 0; i < classInstances.length; i++)
 		{
 			classes[i] = classInstances[i].getClass();
 		}
+		generate();
 	}
 	
 	/**
