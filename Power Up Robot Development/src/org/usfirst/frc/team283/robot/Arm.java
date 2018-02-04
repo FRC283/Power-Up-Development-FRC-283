@@ -5,21 +5,42 @@ import edu.wpi.first.wpilibj.Spark;
 
 public class Arm 
 {
-	Spark roller;
+	 /* Left Arm Solenoid   |  Extended    |  Retracted  |
+	 * Right Arm Solenoid   |  Extended    |  Retracted  |
+	 *  					|      +1      |     -1      |
+	 * Left Arm Controller |   ?  |   ?  |
+	 * Right Arm Controller|   ?  |   ?  |
+	 */  
+	//See LiftSubsystem for relevant signage chart
+	
+	//Components
+	Spark rollerController;
 	Solenoid gripSol;
-	private boolean storedState = false;
+	
+	//Constants
+	private final double ROLLER_DEADZONE = 0.1;
+	
 	public Arm(int sparkPort, int solenoidPort)
 	{
-		roller = new Spark(sparkPort);
+		rollerController = new Spark(sparkPort);
 		gripSol = new Solenoid(solenoidPort);
 	}
-	public void intake(int rollerMagnitude, boolean solenoidState)
+	
+	/**
+	 * Rolls the arm wheel in or out
+	 * @param rollerMagnitude
+	 */
+	public void intake(double rollerMagnitude)
 	{
-		if(solenoidState == true && storedState == false)
-		{
-			gripSol.set(!gripSol.get());
-		}
-		storedState = solenoidState;
-		roller.set(rollerMagnitude);
+		rollerController.set(Utilities283.deadzone(rollerMagnitude, ROLLER_DEADZONE));
+	}
+	
+	/**
+	 * Closes and opens the arms
+	 * @param solenoidState
+	 */
+	public void grip(boolean solenoidState)
+	{
+		gripSol.set(solenoidState); //Invert the solenoid value
 	}
 }

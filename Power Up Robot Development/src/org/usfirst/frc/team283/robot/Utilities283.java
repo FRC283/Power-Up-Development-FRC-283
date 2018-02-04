@@ -14,33 +14,33 @@ import java.util.Date;
 
 import javax.imageio.ImageIO;
 
-public class Utilities283
+public abstract class Utilities283
 {
 	
 	public static void main(String[] args)
 	{
-		new Scheme("PowerUp", "org.usfirst.frc.team283.napalm.DriveSubsystem", "org.usfirst.frc.team283.napalm.LiftSubsystem");
+		Utilities283.generateControls("Power Up", "org.usfirst.frc.team283.robot.DriveSubsystem", "org.usfirst.frc.team283.robot.LiftSubsystem");
 	}
 	
 	//Logitech Ports (Default)
 		//Digital
-			public static final int A = 0;
-			public static final int B = 1;
-			public static final int X = 2;
-			public static final int Y = 3;
-			public static final int LEFT_BUMPER = 4;
-			public static final int RIGHT_BUMPER = 5;
-			public static final int BACK = 6;
-			public static final int START = 7;
-			public static final int LEFT_STICK_BUTTON = 8;
-			public static final int RIGHT_STICK_BUTTON = 9;
+			public static final int LOGITECH_A = 0;
+			public static final int LOGITECH_B = 1;
+			public static final int LOGITECH_X = 2;
+			public static final int LOGITECH_Y = 3;
+			public static final int LOGITECH_LEFT_BUMPER = 4;
+			public static final int LOGITECH_RIGHT_BUMPER = 5;
+			public static final int LOGITECH_BACK = 6;
+			public static final int LOGITECH_START = 7;
+			public static final int LOGITECH_LEFT_STICK_BUTTON = 8;
+			public static final int LOGITECH_RIGHT_STICK_BUTTON = 9;
 		//Analog
-			public static final int LEFT_X = 10;
-			public static final int LEFT_Y = 11;
-			public static final int LEFT_TRIGGER = 12;
-			public static final int RIGHT_TRIGGER = 13;
-			public static final int RIGHT_X = 14;
-			public static final int RIGHT_Y = 15;
+			public static final int LOGITECH_LEFT_X = 10;
+			public static final int LOGITECH_LEFT_Y = 11;
+			public static final int LOGITECH_LEFT_TRIGGER = 12;
+			public static final int LOGITECH_RIGHT_TRIGGER = 13;
+			public static final int LOGITECH_RIGHT_X = 14;
+			public static final int LOGITECH_RIGHT_Y = 15;
 	//Xbox Ports
 		//Digital
 			public static final int XBOX_A = 16;
@@ -66,12 +66,6 @@ public class Utilities283
 	//Right Physical Joystick
 		//Digital
 		//Analog
-	
-	private final int LABEL_BASE_X = 835;
-	private final int LABEL_BASE_Y = 139;
-	private final int LABEL_INCR = 42;
-	private final int TITLE_X = 36;
-	private final int TITLE_Y = 78;
 	
 	/** What kind of controller does the driver and operator use? */
 	public enum driverMode
@@ -106,19 +100,24 @@ public class Utilities283
 		Schema[] value();
 	}
 	
-	/** Our stored references to all classes in this project. Holds a max of 20 for now */
-	private Class<?>[] classes = new Class[20];
-	/** Printed at the top of the Schema */
-	private String robotName = "";
-	
 	/**
-	 * Takes a list of class names and fetches classes based on that
-	 * @param classNames - List of class names
-	 * @param title - Name of robot
+	 * Generates a visual guide to the controls scheme of a robot
+	 * NOTE: Requires base controls image to be in source folder
+	 * @param title - Name of the Robot
+	 * @param classNames - List of classes where the Scheme annotation can be found
 	 */
-	Utilities283(String title, String... classNames)
+	public static void generateControls(String title, String... classNames)
 	{
-		this.robotName = title;
+		//Following: some values for image positioning
+		final int LABEL_BASE_X = 835;
+		final int LABEL_BASE_Y = 139;
+		final int LABEL_INCR = 42;
+		final int TITLE_X = 36;
+		final int TITLE_Y = 78;
+		/** Printed at the top of the Schema */
+		String robotName = title;
+		/** Our stored references to all classes in this project. Holds a max of 20 for now */
+		Class<?>[] classes = new Class[20];
 		for (int i = 0; i < classNames.length; i++)
 		{
 			try 
@@ -130,29 +129,6 @@ public class Utilities283
 				e.printStackTrace();
 			}
 		}
-		generate();
-	}
-	
-	/**
-	 * Takes a list of instantiated classes and stores them
-	 * @deprecated
-	 * @param classInstances - List of objects of desired classes
-	 * @param title - printed at the top of schema
-	 */
-	Utilities283(String title, Object... classInstances)
-	{
-		for (int i = 0; i < classInstances.length; i++)
-		{
-			classes[i] = classInstances[i].getClass();
-		}
-		generate();
-	}
-	
-	/**
-	 * Creates an updated control schema/image based on stored class annotations 
-	 */
-	public void generate()
-	{
 		System.out.println("<=== Generating Controls Image ===>");
 		BufferedImage img = null;
 		try 
@@ -166,7 +142,7 @@ public class Utilities283
 		Graphics g = img.getGraphics();
 	    g.setFont(new Font("Consolas", Font.BOLD, 35));
 	    g.setColor(Color.BLACK);
-		g.drawString(this.robotName +  " Auto-Generated Controls - " + new Date(), TITLE_X, TITLE_Y);
+		g.drawString(robotName +  " Auto-Generated Controls - " + new Date(), TITLE_X, TITLE_Y);
 		g.setFont(new Font("Consolas", Font.PLAIN, 30));
 		for (Class<?> c : classes)
 		{
@@ -234,6 +210,15 @@ public class Utilities283
 		return rescale(deadzone, 1, 0, 1, value);
 	}
 	
+	/**
+	 * A function that changes scales, cutting out outlying values and allowing negatives
+	 * @param lowero - The lower end of the old scale
+	 * @param uppero - The upper end of the old scale
+	 * @param lowern - The lower end of the new scale
+	 * @param uppern - The upper end of the new scale
+	 * @param value - The value, on the old scale, to be returned as its equivalent on the new scale
+	 * @return
+	 */
 	public static double rescale(double lowero, double uppero, double lowern, double uppern, double value)
 	{
 		boolean neg = false;
