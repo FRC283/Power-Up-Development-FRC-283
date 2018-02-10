@@ -66,8 +66,8 @@ public class LiftSubsystem
 	 * Deploys hooks so that the lift may take them up
 	 * @param deployHook - deploy hooks
 	 */
-	@Schema(value = Utilities283.XBOX_X, desc = "Requires +Left Stick Button to deploy hooks")
-	@Schema(value = Utilities283.XBOX_LEFT_STICK_BUTTON, desc = "Requires +Xbox X button to deploy hooks")
+	@Schema(value = Utilities283.XBOX_X, desc = "Deploy hooks +Left Stick Button")
+	@Schema(value = Utilities283.XBOX_LEFT_STICK_BUTTON, desc = "Deploy hooks +Xbox X Button")
 	public void deployHooks(boolean deployHook)
 	{
 		if(deployHook == true)
@@ -86,7 +86,7 @@ public class LiftSubsystem
 	{
 		if(leftHook.get() == EXTENDED && rightHook.get() == EXTENDED) //If both hooks are picked up by the lift
 		{
-			winch.set(Utilities283.rescale(DEADZONE, 1.0, 0, 1.0, winchMagnitude)); //Allow control of winch motor
+			winch.set(Utilities283.rescale(DEADZONE, 1.0, 0, 1.0, winchMagnitude)); //Allow control of 
 		}
 		else
 		{
