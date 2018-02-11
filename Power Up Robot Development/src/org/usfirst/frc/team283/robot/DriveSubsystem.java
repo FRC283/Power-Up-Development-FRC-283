@@ -12,6 +12,10 @@ public class DriveSubsystem
 	//Constants
 	private static final double DEADZONE = 0.1;
 	private static final double SLOWSPEED = 0.5;
+	private static final double P_CONSTANT = 1/100;
+	private static final double I_CONSTANT = 0;
+	/** PI Control continues until the error is below this */
+	private static final double MAX_ALLOWABLE_ERROR = 1;
 	
 	//Signage Chart
 	/*
@@ -33,6 +37,18 @@ public class DriveSubsystem
 	//Variables
 	/** Previous value of the button that controllers this gearshift solenoid */
 	boolean lastGearShiftState = false;
+	/** Number of inches */
+	double leftDriveTarget = 0;
+	/** Number of inches */
+	double rightDriveTarget = 0;
+	/** True while PI control is active */
+	boolean leftCurrentlyControlling;
+	/** True while PI control is active */
+	boolean rightCurrentlyControlling;
+	/** accumulation of error on left side */
+	double aggrLeftError = 0;
+	/** accumulation of error on right side */
+	double aggrRightError = 0;
 	
 	//Actuators\Sensors
 	Spark leftController;
@@ -84,8 +100,70 @@ public class DriveSubsystem
 		lastGearShiftState = gearShiftValue;
 	}
 	
+	/**
+	 * Drives the right drivetrain the specified number of inches
+	 * You must periodically call 'driveDistancePeriodic()'
+	 * @param inches - # of inches
+	 */
+	public void leftDriveDistanceInit(double inches)
+	{
+		leftDriveTarget = inches;
+		leftCurrentlyControlling = true;
+	}
+	
+	/**
+	 * Drives the left drivetrain the specified number of inches
+	 * You must periodically call 'driveDistancePeriodic()'
+	 * @param inches - # of inches
+	 */
+	public void rightDriveDistanceInit(double inches)
+	{
+		rightDriveTarget = inches;
+		rightCurrentlyControlling = true;
+	}
+	
+	/**
+	 * Continuously updates both of the drive motors for target distance 
+	 */
+	public void driveDistancePeriodic()
+	{
+		double leftError = leftDriveTarget - leftEnc.get();
+		double rightError = rightDriveTarget - rightEnc.get();
+		
+		//--LEFT SIDE--
+		if (leftCurrentlyControlling == true)
+		{
+			if (Math.abs(leftError) < MAX_ALLOWABLE_ERROR) //If within allowable error
+			{
+				leftCurrentlyControlling = false; //Stop controlling
+			}
+			else
+			{
+				leftController.set(-P_CONSTANT * leftError + -I_CONSTANT * aggrLeftError);
+				aggrLeftError += leftError;
+			}
+		}
+		//Nothing happens if this is false
+		
+		//--RIGHT SIDE--
+		if (rightCurrentlyControlling == true)
+		{
+			if (Math.abs(rightError) < MAX_ALLOWABLE_ERROR) //If within allowable error
+			{
+				rightCurrentlyControlling = false; //Stop controlling
+			}
+			else
+			{
+				rightController.set(-P_CONSTANT * rightError + -I_CONSTANT * aggrRightError);
+				aggrRightError += rightError;
+			}
+		}
+		//Nothing happens if this is false
+	}
+	
 	public void periodic()
 	{
+		driveDistancePeriodic();
 		SmartDashboard.putNumber("Left Encoder Value", leftEnc.getDistance());
 		SmartDashboard.putNumber("Right Encoder Value", rightEnc.getDistance());
 		SmartDashboard.getBoolean("High Speed", leftGearShift.get());
