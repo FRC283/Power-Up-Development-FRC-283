@@ -13,7 +13,10 @@ public class LiftSubsystem
 	//Constants
 	private static final double DEADZONE = 0.1;
 	private static final boolean EXTENDED = true;
-	
+	private static final double P_CONSTANT = 1/100;
+	private static final double I_CONSTANT = 0;
+	/** PI Control continues until the error is below this */	
+	private static final double MAX_ALLOWABLE_ERROR = 1;
 	//Signage Chart
 	/*
 	 * 					   |     True     |     False   |
@@ -30,7 +33,13 @@ public class LiftSubsystem
 	 * --------------------------------------
 	 * 
 	 */
-	
+	//Variables
+	/** Number of inches */
+	double liftDriveTarget = 0;
+	/** True while PI control is active */
+	boolean liftCurrentlyControlling;
+	/** accumulation of error on lift */
+	double aggrLiftError = 0;
 	//Components
 	Arm leftArm;
 	Arm rightArm;
@@ -113,7 +122,7 @@ public class LiftSubsystem
 	public void intake(double rollerMagnitude)
 	{
 		leftArm.intake(rollerMagnitude);
-		rightArm.intake(rollerMagnitude);
+		rightArm.intake(rollerMagnitude * -1);
 	}
 	
 	/** 
@@ -137,5 +146,27 @@ public class LiftSubsystem
 			rightArm.grip(false);			
 		}
 
+	}
+	public void liftLiftDistance(double inches)
+	{
+		liftDriveTarget = inches;
+		liftCurrentlyControlling = true;
+	}
+	public void liftDistancePeriodic()
+	{
+		double liftError = liftEnc.get() - liftDriveTarget ;
+		if (liftCurrentlyControlling == true)
+		{
+			if (Math.abs(liftError) < MAX_ALLOWABLE_ERROR) //If within allowable error
+			{
+				liftCurrentlyControlling = false; //Stop controlling
+				liftController.set(0);
+			}
+			else
+			{
+				liftController.set(-P_CONSTANT * liftError + -I_CONSTANT * aggrLiftError);
+				aggrLiftError += liftError;
+			}
+		}
 	}
 }

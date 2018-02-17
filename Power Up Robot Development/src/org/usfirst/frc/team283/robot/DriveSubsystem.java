@@ -28,8 +28,8 @@ public class DriveSubsystem
 	 * --------------------------------------
 	 * Left Drive Controller |   ?  |   ?  |
 	 * Right Drive Controller|   ?  |   ?  |
-	 * Left Drive Encoder    |   ?  |   ?  |
-	 * Right Drive Encoder   |   ?  |   ?  |
+	 * Left Drive Encoder    |   Forward  |  Backward   |
+	 * Right Drive Encoder   |   Backward  |  Forward  |
 	 * --------------------------------------
 	 * 
 	 */
@@ -76,7 +76,7 @@ public class DriveSubsystem
 	 */
 	@Schema(Utilities283.LOGITECH_LEFT_Y)
 	@Schema(Utilities283.LOGITECH_RIGHT_Y)
-	@Schema(value = Utilities283.LOGITECH_RIGHT_TRIGGER, desc = SLOWSPEED + " speed")
+	@Schema(value = Utilities283.LOGITECH_RIGHT_BUMPER, desc = SLOWSPEED + " speed")
 	public void drive(double leftMagnitude, double rightMagnitude, boolean slowSpeed)
 	{
 		leftController.set(-1 * (Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, leftMagnitude)) * (slowSpeed ? SLOWSPEED : 1));
@@ -127,8 +127,8 @@ public class DriveSubsystem
 	 */
 	public void driveDistancePeriodic()
 	{
-		double leftError = leftDriveTarget - leftEnc.get();
-		double rightError = rightDriveTarget - rightEnc.get();
+		double leftError = leftEnc.get() - leftDriveTarget;
+		double rightError = rightEnc.get() - rightDriveTarget;
 		
 		//--LEFT SIDE--
 		if (leftCurrentlyControlling == true)
@@ -136,6 +136,7 @@ public class DriveSubsystem
 			if (Math.abs(leftError) < MAX_ALLOWABLE_ERROR) //If within allowable error
 			{
 				leftCurrentlyControlling = false; //Stop controlling
+				leftController.set(0);
 			}
 			else
 			{
@@ -151,6 +152,7 @@ public class DriveSubsystem
 			if (Math.abs(rightError) < MAX_ALLOWABLE_ERROR) //If within allowable error
 			{
 				rightCurrentlyControlling = false; //Stop controlling
+				rightController.set(0);
 			}
 			else
 			{
@@ -161,11 +163,19 @@ public class DriveSubsystem
 		//Nothing happens if this is false
 	}
 	
-	public void periodic()
+	public boolean periodic()
 	{
 		driveDistancePeriodic();
 		SmartDashboard.putNumber("Left Encoder Value", leftEnc.getDistance());
 		SmartDashboard.putNumber("Right Encoder Value", rightEnc.getDistance());
 		SmartDashboard.getBoolean("High Speed", leftGearShift.get());
+		if(rightCurrentlyControlling == false && leftCurrentlyControlling == false)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
 	}
 }
