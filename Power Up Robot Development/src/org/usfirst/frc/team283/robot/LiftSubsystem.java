@@ -3,7 +3,6 @@ package org.usfirst.frc.team283.robot;
 import org.usfirst.frc.team283.robot.Utilities283.Schema;
 
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -12,7 +11,6 @@ public class LiftSubsystem
 {	
 	//Constants
 	private static final double DEADZONE = 0.1;
-	private static final boolean EXTENDED = true;
 	private static final double P_CONSTANT = 1/100;
 	private static final double I_CONSTANT = 0;
 	/** PI Control continues until the error is below this */	
