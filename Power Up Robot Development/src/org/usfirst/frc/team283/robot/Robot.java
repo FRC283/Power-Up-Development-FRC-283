@@ -134,10 +134,10 @@ public class Robot extends IterativeRobot
 		drivetrain.periodic();
 		liftSubsystem.periodic();
 		SmartDashboard.putNumber("Voltage", pdp.getVoltage());
-		//drivetrain.drive(logitech.getRawAxis(Constants.LEFT_Y), logitech.getRawAxis(Constants.RIGHT_Y),(logitech.getRawAxis(Constants.RIGHT_BUMPER));
-		//drivetrain.shiftGear(logitech.getRawButton(Constants.LEFT_BUMPER)); //Successfully shifts gear on initial press
-		//liftSubsystem.deployHooks(xbox.getRawButton(Constants.LEFT_STICK_BUTTON) && xbox.getRawButton(Constants.X)); //If the passed button is true, activates function, otherwise, does nothing
-		//liftSubsystem.climb(xbox.getRawAxis(Constants.LEFT_Y));
+		drivetrain.drive(logitech.getRawAxis(Constants.LEFT_Y), logitech.getRawAxis(Constants.RIGHT_Y),(logitech.getRawAxis(Constants.RIGHT_BUMPER) >= 0.5));
+		drivetrain.shiftGear(logitech.getRawButton(Constants.LEFT_BUMPER)); //Successfully shifts gear on initial press
+		liftSubsystem.unlockWinch(xbox.getRawButton(Constants.LEFT_STICK_BUTTON) && xbox.getRawButton(Constants.RIGHT_STICK_BUTTON)); //If the passed button is true, activates function, otherwise, does nothing
+		liftSubsystem.climb(xbox.getRawAxis(Constants.LEFT_Y));
 		liftSubsystem.lift(xbox.getRawAxis(Constants.RIGHT_Y));
 		liftSubsystem.intake(xbox.getRawAxis(Constants.RIGHT_TRIGGER) - xbox.getRawAxis(Constants.LEFT_TRIGGER));
 		liftSubsystem.grip(xbox.getRawButton(Constants.RIGHT_BUMPER), xbox.getRawButton(Constants.LEFT_BUMPER));

@@ -76,7 +76,7 @@ public class DriveSubsystem
 	 */
 	@Schema(Utilities283.LOGITECH_LEFT_Y)
 	@Schema(Utilities283.LOGITECH_RIGHT_Y)
-	@Schema(value = Utilities283.LOGITECH_RIGHT_BUMPER, desc = SLOWSPEED + " speed")
+	@Schema(value = Utilities283.LOGITECH_RIGHT_TRIGGER, desc = SLOWSPEED + " speed")
 	public void drive(double leftMagnitude, double rightMagnitude, boolean slowSpeed)
 	{
 		leftController.set(-1 * (Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, leftMagnitude)) * (slowSpeed ? SLOWSPEED : 1));

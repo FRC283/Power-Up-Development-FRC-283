@@ -40,6 +40,8 @@ public class LiftSubsystem
 	boolean liftCurrentlyControlling;
 	/** accumulation of error on lift */
 	double aggrLiftError = 0;
+	/** determines if winch is ready to reel in*/
+	boolean winchUnlocked = false;
 	//Components
 	Arm leftArm;
 	Arm rightArm;
@@ -77,12 +79,11 @@ public class LiftSubsystem
 	 */
 	@Schema(value = Utilities283.XBOX_X, desc = "Deploy hooks +Left Stick Button")
 	@Schema(value = Utilities283.XBOX_LEFT_STICK_BUTTON, desc = "Deploy hooks +Xbox X Button")
-	public void deployHooks(boolean deployHook)
+	public void unlockWinch(boolean unlockStick)
 	{
-		if(deployHook == true)
+		if(unlockStick == true)
 		{
-			leftHook.set(EXTENDED);
-			rightHook.set(EXTENDED);
+			winchUnlocked = true;
 		}
 	}
 	
@@ -93,7 +94,7 @@ public class LiftSubsystem
 	@Schema(Utilities283.XBOX_LEFT_Y)
 	public void climb(double winchMagnitude)
 	{
-		if(leftHook.get() == EXTENDED && rightHook.get() == EXTENDED) //If both hooks are picked up by the lift
+		if(winchUnlocked == true) //If both hooks are picked up by the lift
 		{
 			winch.set(Utilities283.rescale(DEADZONE, 1.0, 0, 1.0, winchMagnitude)); //Allow control of 
 		}
