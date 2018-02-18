@@ -48,8 +48,6 @@ public class LiftSubsystem
 	VictorSP winch;
 	Encoder winchEnc;
 	Encoder liftEnc;
-	Solenoid leftHook;
-	Solenoid rightHook;
 	Spark liftController;
 	
 	public LiftSubsystem()
@@ -60,8 +58,6 @@ public class LiftSubsystem
 		rightArm = new Arm(Constants.RIGHT_ARM_CONTROLLER_PORT,Constants.RIGHT_ARM_SOLENOID);
 		winch = new VictorSP(Constants.WINCH_CONTROLLER_PORT);
 		winchEnc = new Encoder(Constants.WINCH_ENCODER_PORT_A,Constants.WINCH_ENCODER_PORT_B);
-		leftHook = new Solenoid(Constants.LEFT_HOOK_SOLENOID);
-		rightHook = new Solenoid(Constants.RIGHT_HOOK_SOLENOID);
 		
 	}
 	
@@ -69,7 +65,6 @@ public class LiftSubsystem
 	{
 		SmartDashboard.putNumber("Winch Encoder", winchEnc.get());
 		SmartDashboard.putNumber("Lift Encoder", liftEnc.get());
-		SmartDashboard.putBoolean("Hook State", leftHook.get());
 		SmartDashboard.putBoolean("Arm Grip State", leftArm.gripSol.get());
 	}
 	
