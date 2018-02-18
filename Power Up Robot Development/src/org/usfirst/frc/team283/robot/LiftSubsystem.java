@@ -77,8 +77,8 @@ public class LiftSubsystem
 	 * Deploys hooks so that the lift may take them up
 	 * @param deployHook - deploy hooks
 	 */
-	@Schema(value = Utilities283.XBOX_X, desc = "Deploy hooks +Left Stick Button")
-	@Schema(value = Utilities283.XBOX_LEFT_STICK_BUTTON, desc = "Deploy hooks +Xbox X Button")
+	@Schema(value = Utilities283.XBOX_X, desc = "ready hooks (+  " + Utilities283.LOGITECH_LEFT_STICK_BUTTON + ")")
+	@Schema(value = Utilities283.XBOX_LEFT_STICK_BUTTON, desc = "ready hooks (+ " + Utilities283.XBOX_X + ")")
 	public void unlockWinch(boolean unlockStick)
 	{
 		if (unlockStick == true)
