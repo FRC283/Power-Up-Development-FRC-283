@@ -55,8 +55,7 @@ public class DriveSubsystem
 	Spark rightController;
 	Encoder leftEnc;
 	Encoder rightEnc;
-	Solenoid leftGearShift;
-	Solenoid rightGearShift;
+	Solenoid gearShift;
 	
 	public DriveSubsystem()
 	{
@@ -64,8 +63,7 @@ public class DriveSubsystem
 		rightController = new Spark(Constants.RIGHT_DRIVE_CONTROLER_PORT);
 		leftEnc = new Encoder(Constants.LEFT_DRIVE_ENCODER_PORT_A, Constants.LEFT_DRIVE_ENCODER_PORT_B);
 		rightEnc = new Encoder(Constants.RIGHT_DRIVE_ENCODER_PORT_A, Constants.RIGHT_DRIVE_ENCODER_PORT_B);
-		leftGearShift = new Solenoid(Constants.LEFT_DRIVE_GEARSHIFT);
-		rightGearShift = new Solenoid(Constants.RIGHT_DRIVE_GEARSHIFT);
+		gearShift = new Solenoid(Constants.DRIVE_GEARSHIFT_PORT);
 	}
 	
 	/**
@@ -94,8 +92,7 @@ public class DriveSubsystem
 	{
 		if (lastGearShiftState == false && gearShiftValue == true)
 		{
-			leftGearShift.set(!leftGearShift.get());
-			rightGearShift.set(!rightGearShift.get());
+			gearShift.set(!gearShift.get());
 		}
 		lastGearShiftState = gearShiftValue;
 	}
@@ -168,7 +165,7 @@ public class DriveSubsystem
 		driveDistancePeriodic();
 		SmartDashboard.putNumber("Left Encoder Value", leftEnc.getDistance());
 		SmartDashboard.putNumber("Right Encoder Value", rightEnc.getDistance());
-		SmartDashboard.getBoolean("High Speed", leftGearShift.get());
+		SmartDashboard.getBoolean("High Speed", gearShift.get());
 		if(rightCurrentlyControlling == false && leftCurrentlyControlling == false)
 		{
 			return false;

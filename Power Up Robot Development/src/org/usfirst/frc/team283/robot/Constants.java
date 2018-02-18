@@ -47,8 +47,6 @@ public class Constants
 			public static final int LIFT_ENCODER_PORT_A = 4;
 			public static final int LIFT_ENCODER_PORT_B = 5;
 		//Pneumatics
-			public static final int LEFT_DRIVE_GEARSHIFT = 1;
-			public static final int RIGHT_DRIVE_GEARSHIFT = 6;
-			public static final int LEFT_ARM_SOLENOID = 0;
-			public static final int RIGHT_ARM_SOLENOID = 3;
+			public static final int DRIVE_GEARSHIFT_PORT = 1;
+			public static final int ARM_SOLENOID_PORT = 0;
 }
