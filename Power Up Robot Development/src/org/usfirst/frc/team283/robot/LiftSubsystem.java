@@ -81,7 +81,7 @@ public class LiftSubsystem
 	@Schema(value = Utilities283.XBOX_LEFT_STICK_BUTTON, desc = "Deploy hooks +Xbox X Button")
 	public void unlockWinch(boolean unlockStick)
 	{
-		if(unlockStick == true)
+		if (unlockStick == true)
 		{
 			winchUnlocked = true;
 		}
