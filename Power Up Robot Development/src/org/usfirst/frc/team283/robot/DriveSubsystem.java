@@ -80,7 +80,7 @@ public class DriveSubsystem
 	 */
 	@Schema(Utilities283.LOGITECH_LEFT_Y)
 	@Schema(Utilities283.LOGITECH_RIGHT_Y)
-	@Schema(value = Utilities283.LOGITECH_RIGHT_TRIGGER, desc = SLOWSPEED + " speed")
+	@Schema(value = Utilities283.LOGITECH_RIGHT_BUMPER, desc = SLOWSPEED + " speed")
 	public void drive(double leftMagnitude, double rightMagnitude, boolean slowSpeed)
 	{
 		//Below: if we are turning (difference between drive side magnitudes is above a certain value) then switch to turning gear
@@ -88,16 +88,25 @@ public class DriveSubsystem
 		{
 			gearShiftSol.set(false); //Gearing that allows turning
 		}
-		else //Else be in speed gear
-		{
-			gearShiftSol.set(true); //Gearing that maximizes speed
-		}
 		leftController.set(-1 * (Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, leftMagnitude)) * (slowSpeed ? SLOWSPEED : 1));
 		rightController.set((Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, rightMagnitude)) * (slowSpeed ? SLOWSPEED : 1));
 		//SmartDashboard.putNumber("Left Magnitude", leftMagnitude);
 		//SmartDashboard.putNumber("Right Magnitude", rightMagnitude);
 	}
 	
+	/**
+	 * 
+	 * Passing through true causes the gearshift solenoid to go to the high speed gearing
+	 * @param shiftState - Pass true to go to high speed, pass false to do nothing
+	 */
+	@Schema(Utilities283.LOGITECH_LEFT_BUMPER)
+	public void highSpeedShift(boolean shiftState)
+	{
+		if (shiftState == true)
+		{
+			gearShiftSol.set(true);
+		}
+	}
 	
 	//Below us commented out until we decide to let people shift gears manually again
 	/**
