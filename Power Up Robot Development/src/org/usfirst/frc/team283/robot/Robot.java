@@ -139,5 +139,6 @@ public class Robot extends IterativeRobot
 	public void disabledInit()
 	{
 		//The arms need to be maintained in the position they are currently in at time of disabled
+		liftSubsystem.regrip();
 	}
 }

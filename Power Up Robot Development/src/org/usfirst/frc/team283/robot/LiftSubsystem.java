@@ -36,12 +36,19 @@ public class LiftSubsystem
 	//Variables
 	/** Number of inches */
 	double liftDriveTarget = 0;
+	
 	/** True while PI control is active */
 	boolean liftCurrentlyControlling;
+	
 	/** accumulation of error on lift */
 	double aggrLiftError = 0;
+	
 	/** determines if winch is ready to reel in*/
 	boolean winchUnlocked = false;
+	
+	/** Last intentionally set solenoid state. When robot is disabled, arms are set to this. */
+	boolean lastArmsState; 
+	
 	//Components
 	Spark leftRollerController;
 	Spark rightRollerController;
@@ -73,8 +80,8 @@ public class LiftSubsystem
 	 * Deploys hooks so that the lift may take them up
 	 * @param deployHook - deploy hooks
 	 */
-	@Schema(value = Utilities283.XBOX_X, desc = "ready hooks (+  " + Utilities283.LOGITECH_LEFT_STICK_BUTTON + ")")
-	@Schema(value = Utilities283.XBOX_LEFT_STICK_BUTTON, desc = "ready hooks (+ " + Utilities283.XBOX_X + ")")
+	@Schema(value = Utilities283.XBOX_RIGHT_STICK_BUTTON, desc = "ready hooks (+  " + Utilities283.LOGITECH_LEFT_STICK_BUTTON + ")")
+	@Schema(value = Utilities283.XBOX_LEFT_STICK_BUTTON, desc = "ready hooks (+ " + Utilities283.XBOX_RIGHT_STICK_BUTTON + ")")
 	public void unlockWinch(boolean unlockStick)
 	{
 		if (unlockStick == true)
@@ -140,13 +147,20 @@ public class LiftSubsystem
 		{
 			armsSol.set(false);		
 		}
-
+		this.lastArmsState = armsSol.get(); //Store the last set state into this var (for disabling code)
 	}
+	
+	public void regrip()
+	{
+		armsSol.set(lastArmsState);
+	}
+	
 	public void liftLiftDistance(double inches)
 	{
 		liftDriveTarget = inches;
 		liftCurrentlyControlling = true;
 	}
+	
 	public void liftDistancePeriodic()
 	{
 		double liftError = liftEnc.get() - liftDriveTarget ;
