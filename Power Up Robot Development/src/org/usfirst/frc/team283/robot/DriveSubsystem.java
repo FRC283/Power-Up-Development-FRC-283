@@ -14,29 +14,35 @@ public class DriveSubsystem
 	private static final double SLOWSPEED = 0.5;
 	private static final double P_CONSTANT = 1/100;
 	private static final double I_CONSTANT = 0;
+	
+	/** If the abs value of the difference of turning values is greater than this, we switch to turning gear*/
+	private static final double TURNING_THRESHOLD = 0.5;
+	
 	/** PI Control continues until the error is below this */
 	private static final double MAX_ALLOWABLE_ERROR = 1;
 	
+	
 	//Signage Chart
 	/*
-	 * 					     | True | False|
-	 * --------------------------------------
-	 * Left Shift Solenoid   |  ?   |  ?   |
-	 * Right Shift Solenoid  |  ?   |  ?   |
-	 * --------------------------------------
-	 * 					     |  +1  |  -1  |
-	 * --------------------------------------
-	 * Left Drive Controller |   ?  |   ?  |
-	 * Right Drive Controller|   ?  |   ?  |
-	 * Left Drive Encoder    |   Forward  |  Backward   |
+	 * 					     | True 	   | False	   |
+	 * -------------------------------------------------------
+	 * Gear Shift Solenoid   |  ?   	   |  ?   	   |
+	 * -------------------------------------------------------
+	 * 
+	 * 
+	 * 
+	 * 					     |  +1  	   |  -1  	   |
+	 * -------------------------------------------------------
+	 * Left Drive Controller |   ?  	   |   ?  	   |
+	 * Right Drive Controller|   ?  	   |   ?  	   |
+	 * Left Drive Encoder    |   Forward   |  Backward |
 	 * Right Drive Encoder   |   Backward  |  Forward  |
-	 * --------------------------------------
 	 * 
 	 */
 	
 	//Variables
 	/** Previous value of the button that controllers this gearshift solenoid */
-	boolean lastGearShiftState = false;
+	//boolean lastGearShiftState = false;
 	/** Number of inches */
 	double leftDriveTarget = 0;
 	/** Number of inches */
@@ -55,7 +61,7 @@ public class DriveSubsystem
 	Spark rightController;
 	Encoder leftEnc;
 	Encoder rightEnc;
-	Solenoid gearShift;
+	Solenoid gearShiftSol;
 	
 	public DriveSubsystem()
 	{
@@ -63,7 +69,7 @@ public class DriveSubsystem
 		rightController = new Spark(Constants.RIGHT_DRIVE_CONTROLER_PORT);
 		leftEnc = new Encoder(Constants.LEFT_DRIVE_ENCODER_PORT_A, Constants.LEFT_DRIVE_ENCODER_PORT_B);
 		rightEnc = new Encoder(Constants.RIGHT_DRIVE_ENCODER_PORT_A, Constants.RIGHT_DRIVE_ENCODER_PORT_B);
-		gearShift = new Solenoid(Constants.DRIVE_GEARSHIFT_PORT);
+		gearShiftSol = new Solenoid(Constants.DRIVE_GEARSHIFT_PORT);
 	}
 	
 	/**
@@ -77,25 +83,37 @@ public class DriveSubsystem
 	@Schema(value = Utilities283.LOGITECH_RIGHT_TRIGGER, desc = SLOWSPEED + " speed")
 	public void drive(double leftMagnitude, double rightMagnitude, boolean slowSpeed)
 	{
+		//Below: if we are turning (difference between drive side magnitudes is above a certain value) then switch to turning gear
+		if (Math.abs(leftMagnitude - rightMagnitude) > TURNING_THRESHOLD)
+		{
+			gearShiftSol.set(false); //Gearing that allows turning
+		}
+		else //Else be in speed gear
+		{
+			gearShiftSol.set(true); //Gearing that maximizes speed
+		}
 		leftController.set(-1 * (Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, leftMagnitude)) * (slowSpeed ? SLOWSPEED : 1));
 		rightController.set((Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, rightMagnitude)) * (slowSpeed ? SLOWSPEED : 1));
 		//SmartDashboard.putNumber("Left Magnitude", leftMagnitude);
 		//SmartDashboard.putNumber("Right Magnitude", rightMagnitude);
 	}
 	
+	
+	//Below us commented out until we decide to let people shift gears manually again
 	/**
 	 * Shifts the drive gear
 	 * @param gearShiftValue - state of the button to execute shifting gears
-	 */
+	 *
 	@Schema(Utilities283.LOGITECH_LEFT_BUMPER)
 	public void shiftGear(boolean gearShiftValue)
 	{
 		if (lastGearShiftState == false && gearShiftValue == true)
 		{
-			gearShift.set(!gearShift.get());
+			gearShiftSol.set(!gearShiftSol.get());
 		}
 		lastGearShiftState = gearShiftValue;
 	}
+	*/
 	
 	/**
 	 * Drives the right drivetrain the specified number of inches
@@ -122,6 +140,7 @@ public class DriveSubsystem
 	/**
 	 * Continuously updates both of the drive motors for target distance 
 	 */
+	@Deprecated
 	public void driveDistancePeriodic()
 	{
 		double leftError = leftEnc.get() - leftDriveTarget;
@@ -165,7 +184,7 @@ public class DriveSubsystem
 		driveDistancePeriodic();
 		SmartDashboard.putNumber("Left Encoder Value", leftEnc.getDistance());
 		SmartDashboard.putNumber("Right Encoder Value", rightEnc.getDistance());
-		SmartDashboard.getBoolean("High Speed", gearShift.get());
+		SmartDashboard.getBoolean("High Speed", gearShiftSol.get());
 		if(rightCurrentlyControlling == false && leftCurrentlyControlling == false)
 		{
 			return false;

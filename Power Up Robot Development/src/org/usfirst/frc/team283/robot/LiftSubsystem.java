@@ -2,6 +2,7 @@ package org.usfirst.frc.team283.robot;
 
 import org.usfirst.frc.team283.robot.Utilities283.Schema;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Spark;
@@ -21,16 +22,16 @@ public class LiftSubsystem
 	/*
 	 * 					   |     True     |     False   |
 	 * ----------------------------------------------------
-	 * Left Hook Solenoid  |  Retracted   |  Extended   |
-	 * Right Hook Solenoid |  Retracted   |  Extended   |
-	 * --------------------------------------
+	 * Arms Solenoid  	   |  Retracted   |  Extended   |
+	 * 
+	 * 
+	 * 
 	 * 					   |  +1  |  -1  |
 	 * --------------------------------------
 	 * Lift Controller     |   ?  |   ?  |
 	 * Winch Controller    |   ?  |   ?  |
 	 * Winch Encoder       |   ?  |   ?  |
 	 * Lift Encoder        |   ?  |   ?  |
-	 * --------------------------------------
 	 * 
 	 */
 	//Variables
@@ -46,9 +47,6 @@ public class LiftSubsystem
 	/** determines if winch is ready to reel in*/
 	boolean winchUnlocked = false;
 	
-	/** Last intentionally set solenoid state. When robot is disabled, arms are set to this. */
-	boolean lastArmsState; 
-	
 	//Components
 	Spark leftRollerController;
 	Spark rightRollerController;
@@ -57,6 +55,7 @@ public class LiftSubsystem
 	Encoder liftEnc;
 	Spark liftController;
 	Solenoid armsSol;
+	DigitalInput lowerLimitSwitch;
 	
 	public LiftSubsystem()
 	{
@@ -67,15 +66,33 @@ public class LiftSubsystem
 		winch = new VictorSP(Constants.WINCH_CONTROLLER_PORT);
 		winchEnc = new Encoder(Constants.WINCH_ENCODER_PORT_A,Constants.WINCH_ENCODER_PORT_B);
 		armsSol = new Solenoid(Constants.ARM_SOLENOID_PORT);
+		lowerLimitSwitch = new DigitalInput(Constants.LIFT_LOWER_SWITCH_PORT);
 	}
 	
+	/**A function that must be called continuously
+	 * 
+	 */
 	public void periodic()
 	{
 		SmartDashboard.putNumber("Winch Encoder", winchEnc.get());
 		SmartDashboard.putNumber("Lift Encoder", liftEnc.get());
 		SmartDashboard.putBoolean("Arm Grip State", armsSol.get());
+		
+		if(lowerLimitSwitch.get() == true)
+		{
+			//TODO: prevent lowering lift at bottom
+			liftEnc.reset();
+		}
 	}
 	
+	/** A function that drives the lift down until it hits the limit switch to define which way is up on the lift and which was is down
+	 * issue: no correlation between positive and negative on the encoder and positive and negative (up and down) on the lift
+	 */
+	public void calibrated()
+	{
+		
+	}
+
 	/**
 	 * Deploys hooks so that the lift may take them up
 	 * @param deployHook - deploy hooks
@@ -147,12 +164,6 @@ public class LiftSubsystem
 		{
 			armsSol.set(false);		
 		}
-		this.lastArmsState = armsSol.get(); //Store the last set state into this var (for disabling code)
-	}
-	
-	public void regrip()
-	{
-		armsSol.set(lastArmsState);
 	}
 	
 	public void liftLiftDistance(double inches)
@@ -161,6 +172,7 @@ public class LiftSubsystem
 		liftCurrentlyControlling = true;
 	}
 	
+	@Deprecated
 	public void liftDistancePeriodic()
 	{
 		double liftError = liftEnc.get() - liftDriveTarget ;
