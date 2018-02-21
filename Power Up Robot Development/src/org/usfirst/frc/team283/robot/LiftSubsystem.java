@@ -38,6 +38,12 @@ public class LiftSubsystem
 	/** Number of inches */
 	double liftDriveTarget = 0;
 	
+	/** previous state of limit switch */
+	boolean prevLimitState = false;
+	
+	/** previous signage of magnitude*/
+	double previousMag = 0;
+	
 	/** True while PI control is active */
 	boolean liftCurrentlyControlling;
 	
@@ -55,7 +61,7 @@ public class LiftSubsystem
 	Encoder liftEnc;
 	Spark liftController;
 	Solenoid armsSol;
-	DigitalInput lowerLimitSwitch;
+	DigitalInput upperLimitSwitch;
 	
 	public LiftSubsystem()
 	{
@@ -66,7 +72,7 @@ public class LiftSubsystem
 		winch = new VictorSP(Constants.WINCH_CONTROLLER_PORT);
 		winchEnc = new Encoder(Constants.WINCH_ENCODER_PORT_A,Constants.WINCH_ENCODER_PORT_B);
 		armsSol = new Solenoid(Constants.ARM_SOLENOID_PORT);
-		lowerLimitSwitch = new DigitalInput(Constants.LIFT_LOWER_SWITCH_PORT);
+		upperLimitSwitch = new DigitalInput(Constants.LIFT_LIMIT_PORT);
 	}
 	
 	/**A function that must be called continuously
@@ -77,20 +83,6 @@ public class LiftSubsystem
 		SmartDashboard.putNumber("Winch Encoder", winchEnc.get());
 		SmartDashboard.putNumber("Lift Encoder", liftEnc.get());
 		SmartDashboard.putBoolean("Arm Grip State", armsSol.get());
-		
-		if(lowerLimitSwitch.get() == true)
-		{
-			//TODO: prevent lowering lift at bottom
-			liftEnc.reset();
-		}
-	}
-	
-	/** A function that drives the lift down until it hits the limit switch to define which way is up on the lift and which was is down
-	 * issue: no correlation between positive and negative on the encoder and positive and negative (up and down) on the lift
-	 */
-	public void calibrated()
-	{
-		
 	}
 
 	/**
@@ -126,12 +118,42 @@ public class LiftSubsystem
 
 	/**
 	 * Controls up-down motion of lift
-	 * @param liftMagnitude - magnitude of pulley
+	 * @param liftMagnitude - controller input
 	 */
 	@Schema(Utilities283.XBOX_RIGHT_Y)
 	public void lift(double liftMagnitude)
 	{
-		liftController.set(Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, liftMagnitude));
+		//
+		if (upperLimitSwitch.get() == true && this.prevLimitState == true)
+		{
+			if (liftMagnitude > 0 && this.previousMag < 0)
+			{
+				liftController.set(Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, liftMagnitude));
+			}
+			else if (liftMagnitude < 0 && this.previousMag > 0)
+			{
+				liftController.set(Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, liftMagnitude));
+			}
+			else
+			{
+				liftController.set(0);
+			}
+		}
+		else if (upperLimitSwitch.get() == true && this.prevLimitState == false)
+		{
+			liftController.set(0);
+			previousMag = liftMagnitude;
+			prevLimitState = true;
+		}
+		else if (upperLimitSwitch.get() == false && this.prevLimitState == true)
+		{
+			previousMag = 0;
+			prevLimitState = false;
+		}
+		else
+		{
+			liftController.set(Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, liftMagnitude));
+		}
 	}
 	
 	/** 

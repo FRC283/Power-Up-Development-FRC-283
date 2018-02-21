@@ -52,7 +52,7 @@ public class Robot extends IterativeRobot
 				switch (autoStep) //Determines the phase of the autonomous
 				{
 					case 0:
-						drivetrain.leftDriveDistanceInit(150); //Drive forwards
+						drivetrain.leftController.set(.5); //Drive forwards
 						drivetrain.rightDriveDistanceInit(150);
 						autoStep++;
 					break;
@@ -126,7 +126,7 @@ public class Robot extends IterativeRobot
 		liftSubsystem.periodic();
 		SmartDashboard.putNumber("Voltage", pdp.getVoltage());
 		drivetrain.drive(logitech.getRawAxis(Constants.LEFT_Y), logitech.getRawAxis(Constants.RIGHT_Y),(logitech.getRawAxis(Constants.RIGHT_BUMPER) >= 0.5));
-		drivetrain.highSpeedShift(logitech.getRawButton(Constants.LEFT_BUMPER)); //Shifts the gearing to the
+		drivetrain.shiftGear(logitech.getRawButton(Constants.LEFT_BUMPER)); //Shifts the gearing to the
 		liftSubsystem.unlockWinch(xbox.getRawButton(Constants.LEFT_STICK_BUTTON) && xbox.getRawButton(Constants.RIGHT_STICK_BUTTON)); //If the passed button is true, activates function, otherwise, does nothing
 		liftSubsystem.climb(xbox.getRawAxis(Constants.LEFT_Y));
 		liftSubsystem.lift(xbox.getRawAxis(Constants.RIGHT_Y));

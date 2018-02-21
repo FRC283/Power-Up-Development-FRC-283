@@ -16,7 +16,7 @@ public class DriveSubsystem
 	private static final double I_CONSTANT = 0;
 	
 	/** If the abs value of the difference of turning values is greater than this, we switch to turning gear*/
-	private static final double TURNING_THRESHOLD = 0.5;
+	private static final double TURNING_THRESHOLD = 0.75;
 	
 	/** PI Control continues until the error is below this */
 	private static final double MAX_ALLOWABLE_ERROR = 1;
@@ -42,7 +42,7 @@ public class DriveSubsystem
 	
 	//Variables
 	/** Previous value of the button that controllers this gearshift solenoid */
-	//boolean lastGearShiftState = false;
+	boolean lastGearShiftState = false;
 	/** Number of inches */
 	double leftDriveTarget = 0;
 	/** Number of inches */
@@ -76,7 +76,7 @@ public class DriveSubsystem
 	 * Controls the drive speed of both sides of the robot
 	 * @param leftMagnitude - Left drive magnitude
 	 * @param rightMagnitude - Right drive magnitude
-	 * @param slowSpeed - If true, cut speed by factor of 0.5
+	 * @param slowSpeed - If true, cut speed by factor of 0.5ish (see code for value)
 	 */
 	@Schema(Utilities283.LOGITECH_LEFT_Y)
 	@Schema(Utilities283.LOGITECH_RIGHT_Y)
@@ -95,24 +95,10 @@ public class DriveSubsystem
 	}
 	
 	/**
-	 * 
-	 * Passing through true causes the gearshift solenoid to go to the high speed gearing
-	 * @param shiftState - Pass true to go to high speed, pass false to do nothing
-	 */
-	@Schema(Utilities283.LOGITECH_LEFT_BUMPER)
-	public void highSpeedShift(boolean shiftState)
-	{
-		if (shiftState == true)
-		{
-			gearShiftSol.set(true);
-		}
-	}
-	
-	//Below us commented out until we decide to let people shift gears manually again
-	/**
 	 * Shifts the drive gear
 	 * @param gearShiftValue - state of the button to execute shifting gears
 	 *
+	 */
 	@Schema(Utilities283.LOGITECH_LEFT_BUMPER)
 	public void shiftGear(boolean gearShiftValue)
 	{
@@ -122,7 +108,7 @@ public class DriveSubsystem
 		}
 		lastGearShiftState = gearShiftValue;
 	}
-	*/
+	
 	
 	/**
 	 * Drives the right drivetrain the specified number of inches
