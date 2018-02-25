@@ -45,7 +45,7 @@ public class LiftSubsystem
 	double previousMag = 0;
 	
 	/** True while PI control is active */
-	boolean liftCurrentlyControlling;
+	boolean liftCurrentlyControlling = false;
 	
 	/** accumulation of error on lift */
 	double aggrLiftError = 0;
@@ -78,11 +78,19 @@ public class LiftSubsystem
 	/**A function that must be called continuously
 	 * 
 	 */
-	public void periodic()
+	public boolean periodic()
 	{
 		SmartDashboard.putNumber("Winch Encoder", winchEnc.get());
 		SmartDashboard.putNumber("Lift Encoder", liftEnc.get());
 		SmartDashboard.putBoolean("Arm Grip State", armsSol.get());
+		if(liftCurrentlyControlling == false)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
 	}
 
 	/**
@@ -123,14 +131,14 @@ public class LiftSubsystem
 	@Schema(Utilities283.XBOX_RIGHT_Y)
 	public void lift(double liftMagnitude)
 	{
-		//
-		if (upperLimitSwitch.get() == true && this.prevLimitState == true)
+		liftMagnitude *= 0.5; //Cut lift speed in half
+		if (upperLimitSwitch.get() == true && this.prevLimitState == true) //every cycle after the first that the limit is hit
 		{
-			if (liftMagnitude > 0 && this.previousMag < 0)
+			if (liftMagnitude > 0 && this.previousMag < 0) //no negative mag
 			{
 				liftController.set(Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, liftMagnitude));
 			}
-			else if (liftMagnitude < 0 && this.previousMag > 0)
+			else if (liftMagnitude < 0 && this.previousMag > 0) // no positive mag
 			{
 				liftController.set(Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, liftMagnitude));
 			}
@@ -139,15 +147,15 @@ public class LiftSubsystem
 				liftController.set(0);
 			}
 		}
-		else if (upperLimitSwitch.get() == true && this.prevLimitState == false)
+		else if (upperLimitSwitch.get() == true && this.prevLimitState == false) // first cycle limit is hit
 		{
-			liftController.set(0);
-			previousMag = liftMagnitude;
+			liftController.set(0); //stops lift
+			previousMag = liftMagnitude; // sets previous magnitude to prevent breaking the lift
 			prevLimitState = true;
 		}
-		else if (upperLimitSwitch.get() == false && this.prevLimitState == true)
+		else if (upperLimitSwitch.get() == false && this.prevLimitState == true) //limit is released
 		{
-			previousMag = 0;
+			previousMag = 0; //reset magnitude memory
 			prevLimitState = false;
 		}
 		else
