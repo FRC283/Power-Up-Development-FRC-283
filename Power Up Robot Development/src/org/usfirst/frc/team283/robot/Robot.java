@@ -8,12 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends IterativeRobot 
 {
-	/* TODO:
-	 * DriveDistance function for autonomous
-	 * LiftDistance function for autonomous
-	 *
-	 * When hooks are released, make the wench unwind with the lift
-	 */
+	//TODO: Signage Chart
 	int autoStep = 0;
 	boolean autoForward;
 	enum AutoMode 
@@ -24,15 +19,15 @@ public class Robot extends IterativeRobot
 		kRightLeftRight, 		//Drives forward, turns right, forward, left, forward, turn 90 degrees left, drop cube in switch
 		kAllLeft, 				//Drives forward, turns left, forward, right, forward, turn 90 degrees right, drop cube in switch
 		kAllRight, 				//Drives forward, turns right, forward, left, forward, turn 90 degrees left, drop cube in switch
-		kDone					//
+		kStop					//Does nothing
 	};
-	Joystick logitech;
-	Joystick xbox;
-	DriveSubsystem drivetrain;
-	LiftSubsystem liftSubsystem;
+	Joystick logitech;										   //
+	Joystick xbox;											   //
+	DriveSubsystem drivetrain;								   //
+	LiftSubsystem liftSubsystem;							   //
 	PowerDistributionPanel pdp = new PowerDistributionPanel(); //
-	private AutoMode aM = AutoMode.kForwards;
-	String gameData;
+	private AutoMode aM = AutoMode.kStop;					   //
+	String gameData;										   //
 	@Override
 	public void robotInit() 
 	{
@@ -51,6 +46,7 @@ public class Robot extends IterativeRobot
 		
 	}
 	
+	@SuppressWarnings("incomplete-switch")
 	@Override
 	public void autonomousPeriodic() 
 	{
@@ -429,7 +425,7 @@ public class Robot extends IterativeRobot
 				break;
 				}
 			break;
-			case kDone:
+			case kStop:
 			break;
 			*/
 		}
@@ -451,7 +447,12 @@ public class Robot extends IterativeRobot
 		liftSubsystem.unlockWinch(xbox.getRawButton(Constants.LEFT_STICK_BUTTON) && xbox.getRawButton(Constants.RIGHT_STICK_BUTTON)); //If the passed button is true, activates function, otherwise, does nothing
 		liftSubsystem.climb(xbox.getRawAxis(Constants.LEFT_Y));
 		liftSubsystem.lift(xbox.getRawAxis(Constants.RIGHT_Y));
-		liftSubsystem.intake(xbox.getRawAxis(Constants.RIGHT_TRIGGER) - xbox.getRawAxis(Constants.LEFT_TRIGGER));
+		liftSubsystem.intake(xbox.getRawAxis(Constants.LEFT_TRIGGER) - xbox.getRawAxis(Constants.RIGHT_TRIGGER));
 		liftSubsystem.grip(xbox.getRawButton(Constants.RIGHT_BUMPER), xbox.getRawButton(Constants.LEFT_BUMPER));
+		SmartDashboard.putNumber("Logitech Left Y: ", logitech.getRawAxis(Constants.LEFT_Y));
+		SmartDashboard.putNumber("Logitech Right Y: ", logitech.getRawAxis(Constants.RIGHT_Y));
+		SmartDashboard.putNumber("Xbox Right Y: ", logitech.getRawAxis(Constants.RIGHT_Y));
+		SmartDashboard.putNumber("Xbox Right Trigger: ", logitech.getRawAxis(Constants.RIGHT_TRIGGER));
+		SmartDashboard.putNumber("Xbox Left Trigger: ", logitech.getRawAxis(Constants.LEFT_TRIGGER));
 	}
 }

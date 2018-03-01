@@ -23,15 +23,14 @@ public class LiftSubsystem
 	 * 					   |     True     |     False   |
 	 * ----------------------------------------------------
 	 * Arms Solenoid  	   |  Retracted   |  Extended   |
-	 * 
-	 * 
-	 * 
-	 * 					   |  +1  |  -1  |
-	 * --------------------------------------
-	 * Lift Controller     |   ?  |   ?  |
-	 * Winch Controller    |   ?  |   ?  |
-	 * Winch Encoder       |   ?  |   ?  |
-	 * Lift Encoder        |   ?  |   ?  |
+	 * Lift Limit Switch   |  Unpressed	  |  Pressed    |
+	 * ---------------------------------------------------------
+	 * 					   |      +1      |      -1     |
+	 * ------------------------------------------------------
+	 * Lift Controller     |   ?          |   ?         |
+	 * Winch Controller    |   ?          |   ?         |
+	 * Winch Encoder       |   ?          |   ?         |
+	 * Lift Encoder        |   ?          |   ?         |
 	 * 
 	 */
 	//Variables
@@ -39,7 +38,7 @@ public class LiftSubsystem
 	double liftDriveTarget = 0;
 	
 	/** previous state of limit switch */
-	boolean prevLimitState = false;
+	boolean prevLimitState = true;
 	
 	/** previous signage of magnitude*/
 	double previousMag = 0;
@@ -83,6 +82,10 @@ public class LiftSubsystem
 		SmartDashboard.putNumber("Winch Encoder", winchEnc.get());
 		SmartDashboard.putNumber("Lift Encoder", liftEnc.get());
 		SmartDashboard.putBoolean("Arm Grip State", armsSol.get());
+		SmartDashboard.putBoolean("State of Lift Limit", upperLimitSwitch.get());
+		SmartDashboard.putBoolean("Intakes are Rolling In", (liftController.get() > 0));
+		
+		//Below: logic used during autonomou
 		if(liftCurrentlyControlling == false)
 		{
 			return false;
@@ -131,8 +134,9 @@ public class LiftSubsystem
 	@Schema(Utilities283.XBOX_RIGHT_Y)
 	public void lift(double liftMagnitude)
 	{
-		liftMagnitude *= 0.5; //Cut lift speed in half
-		if (upperLimitSwitch.get() == true && this.prevLimitState == true) //every cycle after the first that the limit is hit
+		liftMagnitude *= 0.75; //Cut lift speed in half
+		/*
+		if (upperLimitSwitch.get() == false && this.prevLimitState == false) //every cycle after the first that the limit is hit
 		{
 			if (liftMagnitude > 0 && this.previousMag < 0) //no negative mag
 			{
@@ -153,15 +157,17 @@ public class LiftSubsystem
 			previousMag = liftMagnitude; // sets previous magnitude to prevent breaking the lift
 			prevLimitState = true;
 		}
-		else if (upperLimitSwitch.get() == false && this.prevLimitState == true) //limit is released
+		else if (upperLimitSwitch.get() == true && this.prevLimitState == false) //limit is released
 		{
 			previousMag = 0; //reset magnitude memory
-			prevLimitState = false;
+			prevLimitState = true;
 		}
 		else
 		{
 			liftController.set(Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, liftMagnitude));
 		}
+		*/
+		liftController.set(Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, liftMagnitude));
 	}
 	
 	/** 

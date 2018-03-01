@@ -179,8 +179,6 @@ public class DriveSubsystem
 	public boolean periodic()
 	{
 		driveDistancePeriodic();
-		SmartDashboard.putNumber("Left Encoder Value", leftEnc.getDistance());
-		SmartDashboard.putNumber("Right Encoder Value", rightEnc.getDistance());
 		SmartDashboard.getBoolean("High Speed", gearShiftSol.get());
 		if(rightCurrentlyControlling == false && leftCurrentlyControlling == false)
 		{
