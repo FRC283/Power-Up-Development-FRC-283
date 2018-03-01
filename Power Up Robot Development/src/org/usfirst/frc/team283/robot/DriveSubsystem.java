@@ -115,6 +115,7 @@ public class DriveSubsystem
 	 * You must periodically call 'driveDistancePeriodic()'
 	 * @param inches - # of inches
 	 */
+	@Deprecated
 	public void leftDriveDistanceInit(double inches)
 	{
 		leftDriveTarget = inches;
@@ -126,6 +127,7 @@ public class DriveSubsystem
 	 * You must periodically call 'driveDistancePeriodic()'
 	 * @param inches - # of inches
 	 */
+	@Deprecated
 	public void rightDriveDistanceInit(double inches)
 	{
 		rightDriveTarget = inches;

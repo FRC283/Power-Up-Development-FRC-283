@@ -18,7 +18,13 @@ public class Robot extends IterativeRobot
 	boolean autoForward;
 	enum AutoMode 
 	{
-		kForwards, kLeftRightLeft, kRightLeftRight, kAllLeft, kAllRight, kDone
+		kSimpleForwards, 		//Uses timer logic to move past the base line
+		kForwards, 				//Uses distance logic to move past baseline
+		kLeftRightLeft, 		//Drives forward, turns left, forward, right, forward, turn 90 degrees right, drop cube in switch
+		kRightLeftRight, 		//Drives forward, turns right, forward, left, forward, turn 90 degrees left, drop cube in switch
+		kAllLeft, 				//Drives forward, turns left, forward, right, forward, turn 90 degrees right, drop cube in switch
+		kAllRight, 				//Drives forward, turns right, forward, left, forward, turn 90 degrees left, drop cube in switch
+		kDone					//
 	};
 	Joystick logitech;
 	Joystick xbox;
@@ -48,29 +54,26 @@ public class Robot extends IterativeRobot
 	@Override
 	public void autonomousPeriodic() 
 	{
-		while(aM == AutoMode.kForwards && autoForward == false)
+		while(aM == null) //while FMS is booting up and autonomous has not been chosen
 		{
 			if(gameData.length() > 0)
 			{
-				if(gameData.charAt(0) == 'L' && gameData.charAt(1) == 'R')
+				//Since the FMS returns YOUR field placement (as in alliance color setup) the value returned will be for your sides of the switch and scale from your perspective
+				if(gameData.charAt(0) == 'L' && gameData.charAt(1) == 'R')			//If FMS returns 'LRL' - We ignore last character
 				{
-					aM = AutoMode.kLeftRightLeft;
+					aM = AutoMode.kLeftRightLeft; 	//Set auto to 'LRL'
 				}
-				else if(gameData.charAt(0) == 'R' && gameData.charAt(1) == 'L')
+				else if(gameData.charAt(0) == 'R' && gameData.charAt(1) == 'L')		//If FMS returns 'RLR' - We ignore last character
 				{
-					aM = AutoMode.kRightLeftRight;
+					aM = AutoMode.kRightLeftRight;	//Set auto to 'RLR'
 				}
-				else if(gameData.charAt(0) == 'L' && gameData.charAt(1) == 'L')
+				else if(gameData.charAt(0) == 'L' && gameData.charAt(1) == 'L') 	//If FMS returns 'LLL' - We ignore last character
 				{
-					aM = AutoMode.kAllLeft;
+					aM = AutoMode.kAllLeft;			//Set auto to 'LLL'
 				}
-				else if(gameData.charAt(0) == 'R' && gameData.charAt(1) == 'R')
+				else if(gameData.charAt(0) == 'R' && gameData.charAt(1) == 'R')		//If FMS returns 'RRR' - We ignore last character
 				{
-					aM = AutoMode.kAllRight;
-				}
-				else
-				{
-					aM = AutoMode.kForwards;
+					aM = AutoMode.kAllRight;		//Set auto to 'RRR'
 				}
 			}
 		}
@@ -78,6 +81,10 @@ public class Robot extends IterativeRobot
 		liftSubsystem.periodic();
 		switch (aM) //Executes an autonomous based on the values of aM
 		{
+			case kSimpleForwards:
+				//Simple timer-based forward movement
+			break;
+		/*
 			case kForwards:
 				switch (autoStep) //Determines the phase of the autonomous
 				{
@@ -424,6 +431,7 @@ public class Robot extends IterativeRobot
 			break;
 			case kDone:
 			break;
+			*/
 		}
 	}
 	
@@ -438,7 +446,6 @@ public class Robot extends IterativeRobot
 	{
 		drivetrain.periodic();
 		liftSubsystem.periodic();
-		SmartDashboard.putNumber("Voltage", pdp.getVoltage());
 		drivetrain.drive(logitech.getRawAxis(Constants.LEFT_Y), logitech.getRawAxis(Constants.RIGHT_Y),(logitech.getRawAxis(Constants.RIGHT_BUMPER) >= 0.5));
 		drivetrain.shiftGear(logitech.getRawButton(Constants.LEFT_BUMPER)); //Shifts the gearing to the
 		liftSubsystem.unlockWinch(xbox.getRawButton(Constants.LEFT_STICK_BUTTON) && xbox.getRawButton(Constants.RIGHT_STICK_BUTTON)); //If the passed button is true, activates function, otherwise, does nothing
@@ -446,7 +453,5 @@ public class Robot extends IterativeRobot
 		liftSubsystem.lift(xbox.getRawAxis(Constants.RIGHT_Y));
 		liftSubsystem.intake(xbox.getRawAxis(Constants.RIGHT_TRIGGER) - xbox.getRawAxis(Constants.LEFT_TRIGGER));
 		liftSubsystem.grip(xbox.getRawButton(Constants.RIGHT_BUMPER), xbox.getRawButton(Constants.LEFT_BUMPER));
-		//SmartDashboard.putBoolean("LEFT", xbox.getRawButton(Constants.LEFT_BUMPER));
-		//SmartDashboard.putBoolean("RIGHT", xbox.getRawButton(Constants.RIGHT_BUMPER));
 	}
 }

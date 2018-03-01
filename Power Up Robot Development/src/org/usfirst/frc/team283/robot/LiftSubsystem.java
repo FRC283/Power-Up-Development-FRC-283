@@ -196,7 +196,8 @@ public class LiftSubsystem
 		}
 	}
 	
-	public void liftLiftDistance(double inches)
+	@Deprecated
+	public void liftDistanceInit(double inches)
 	{
 		liftDriveTarget = inches;
 		liftCurrentlyControlling = true;
