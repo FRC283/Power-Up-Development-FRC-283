@@ -1,0 +1,12 @@
+<xml version="1.0">
+<dashboard>
+	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.Image">
+		<location x="208" y="13"/>
+		<width>1146</width>
+		<height>666</height>
+		<property name="Image File" value="C:\Users\FRC_STANDARD_USER\Desktop\Power Up Development\Power Up Repository\Power Up Robot Development\ControlsImage.png"/>
+	</static-widget>
+</dashboard>
+<live-window>
+</live-window>
+</xml>
