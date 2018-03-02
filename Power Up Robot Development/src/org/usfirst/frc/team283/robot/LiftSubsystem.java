@@ -22,7 +22,7 @@ public class LiftSubsystem
 	/*
 	 * 					   |     True     |     False   |
 	 * ----------------------------------------------------
-	 * Arms Solenoid  	   |  Retracted   |  Extended   |
+	 * Arms Solenoid  	   |  Extended    |    False    |
 	 * Lift Limit Switch   |  Unpressed	  |  Pressed    |
 	 * ---------------------------------------------------------
 	 * 					   |      +1      |      -1     |
@@ -85,7 +85,7 @@ public class LiftSubsystem
 	{
 		SmartDashboard.putNumber("Winch Encoder", winchEnc.get());
 		SmartDashboard.putNumber("Lift Encoder", liftEnc.get());
-		SmartDashboard.putBoolean("Arms are Closed", !armsSol.get());
+		SmartDashboard.putBoolean("Arms are Closed", armsSol.get());
 		SmartDashboard.putBoolean("State of Lift Limit", upperLimitSwitch.get());
 		SmartDashboard.putBoolean("Previous Limit State", prevLimitState);
 		SmartDashboard.putBoolean("Intakes are Rolling In", (liftController.get() > 0));
@@ -195,11 +195,11 @@ public class LiftSubsystem
 	@Schema(Utilities283.LOGITECH_LEFT_BUMPER)
 	public void grip(boolean toggle)
 	{
-		if (this.gripperTogglePrev == false && armsSol.get() == true) //If we have a button PRESS event (rising edge)
+		if (this.gripperTogglePrev == false && toggle == true) //If we have a button PRESS event (rising edge)
 		{
 			armsSol.set(!armsSol.get()); 							  //Invert the value of the grip
 		}
-		this.gripperTogglePrev = armsSol.get();						  //Update the previous value
+		this.gripperTogglePrev = toggle;					//Update the previous value
 	}
 	
 	@Deprecated
