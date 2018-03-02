@@ -27,10 +27,11 @@ public class LiftSubsystem
 	 * ---------------------------------------------------------
 	 * 					   |      +1      |      -1     |
 	 * ------------------------------------------------------
-	 * Lift Controller     |   ?          |   ?         |
-	 * Winch Controller    |   ?          |   ?         |
+	 * Xbox Lift Joystick  |	Down	  |		Up   	|
+	 * Lift Controller     |    Up/Down   |   Down/Up   |
+	 * Winch Controller    |   Reel In    |   Reel Out  |
 	 * Winch Encoder       |   ?          |   ?         |
-	 * Lift Encoder        |   ?          |   ?         |
+	 * Lift Encoder        |    Up/Down   |   Down/Up   |
 	 * 
 	 */
 	//Variables
@@ -83,9 +84,12 @@ public class LiftSubsystem
 		SmartDashboard.putNumber("Lift Encoder", liftEnc.get());
 		SmartDashboard.putBoolean("Arm Grip State", armsSol.get());
 		SmartDashboard.putBoolean("State of Lift Limit", upperLimitSwitch.get());
+		SmartDashboard.putBoolean("Previous Limit State", prevLimitState);
 		SmartDashboard.putBoolean("Intakes are Rolling In", (liftController.get() > 0));
+		SmartDashboard.putNumber("Previous Lift Magnitude", previousMag);
 		
-		//Below: logic used during autonomou
+		
+		//Below: logic used during autonomous
 		if(liftCurrentlyControlling == false)
 		{
 			return false;
@@ -100,7 +104,7 @@ public class LiftSubsystem
 	 * Deploys hooks so that the lift may take them up
 	 * @param deployHook - deploy hooks
 	 */
-	@Schema(value = Utilities283.XBOX_RIGHT_STICK_BUTTON, desc = "ready hooks (+  " + Utilities283.LOGITECH_LEFT_STICK_BUTTON + ")")
+	@Schema(value = Utilities283.XBOX_RIGHT_STICK_BUTTON, desc = "ready hooks (+  " + Utilities283.XBOX_LEFT_STICK_BUTTON + ")")
 	@Schema(value = Utilities283.XBOX_LEFT_STICK_BUTTON, desc = "ready hooks (+ " + Utilities283.XBOX_RIGHT_STICK_BUTTON + ")")
 	public void unlockWinch(boolean unlockStick)
 	{
@@ -135,7 +139,8 @@ public class LiftSubsystem
 	public void lift(double liftMagnitude)
 	{
 		liftMagnitude *= 0.75; //Cut lift speed in half
-		/*
+		System.out.println("Lift Magnitude = " + liftMagnitude);
+		//REMINDER: "FALSE" ON THE LIMIT SWITCH IS HIT
 		if (upperLimitSwitch.get() == false && this.prevLimitState == false) //every cycle after the first that the limit is hit
 		{
 			if (liftMagnitude > 0 && this.previousMag < 0) //no negative mag
@@ -151,23 +156,21 @@ public class LiftSubsystem
 				liftController.set(0);
 			}
 		}
-		else if (upperLimitSwitch.get() == true && this.prevLimitState == false) // first cycle limit is hit
+		else if (upperLimitSwitch.get() == false && this.prevLimitState == true) // first cycle limit is hit
 		{
 			liftController.set(0); //stops lift
 			previousMag = liftMagnitude; // sets previous magnitude to prevent breaking the lift
-			prevLimitState = true;
 		}
 		else if (upperLimitSwitch.get() == true && this.prevLimitState == false) //limit is released
 		{
 			previousMag = 0; //reset magnitude memory
-			prevLimitState = true;
 		}
 		else
 		{
 			liftController.set(Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, liftMagnitude));
 		}
-		*/
-		liftController.set(Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, liftMagnitude));
+		prevLimitState = upperLimitSwitch.get();
+		//liftController.set(Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, liftMagnitude));
 	}
 	
 	/** 

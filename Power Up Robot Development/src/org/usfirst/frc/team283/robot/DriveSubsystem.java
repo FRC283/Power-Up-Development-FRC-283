@@ -26,15 +26,14 @@ public class DriveSubsystem
 	/*
 	 * 					     | True 	   | False	   |
 	 * -------------------------------------------------------
-	 * Gear Shift Solenoid   |  ?   	   |  ?   	   |
+	 * Gear Shift Solenoid   |  High Gear  |  Low Gear |
 	 * -------------------------------------------------------
-	 * 
-	 * 
-	 * 
 	 * 					     |  +1  	   |  -1  	   |
 	 * -------------------------------------------------------
-	 * Left Drive Controller |   ?  	   |   ?  	   |
-	 * Right Drive Controller|   ?  	   |   ?  	   |
+	 * Left Drive Joystick   |   Backwards | Forwards  |
+	 * Right Drive Joystick  |   Backwards | Forwards  |
+	 * Left Drive Controller |   Forwards  | Backwards |
+	 * Right Drive Controller|   Backwards | Forwards  |
 	 * Left Drive Encoder    |   Forward   |  Backward |
 	 * Right Drive Encoder   |   Backward  |  Forward  |
 	 * 
@@ -88,8 +87,8 @@ public class DriveSubsystem
 		{
 			gearShiftSol.set(false); //Gearing that allows turning
 		}
-		leftController.set(-1 * (Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, leftMagnitude)) * (slowSpeed ? SLOWSPEED : 1));
-		rightController.set((Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, rightMagnitude)) * (slowSpeed ? SLOWSPEED : 1));
+		leftController.set(-1 * (leftMagnitude) * (slowSpeed ? SLOWSPEED : 1));
+		rightController.set((rightMagnitude) * (slowSpeed ? SLOWSPEED : 1));
 		//SmartDashboard.putNumber("Left Magnitude", leftMagnitude);
 		//SmartDashboard.putNumber("Right Magnitude", rightMagnitude);
 	}
@@ -179,7 +178,7 @@ public class DriveSubsystem
 	public boolean periodic()
 	{
 		driveDistancePeriodic();
-		SmartDashboard.getBoolean("High Speed", gearShiftSol.get());
+		SmartDashboard.putBoolean("High Speed", gearShiftSol.get());
 		if(rightCurrentlyControlling == false && leftCurrentlyControlling == false)
 		{
 			return false;

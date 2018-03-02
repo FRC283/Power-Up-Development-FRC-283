@@ -451,8 +451,8 @@ public class Robot extends IterativeRobot
 		liftSubsystem.grip(xbox.getRawButton(Constants.RIGHT_BUMPER), xbox.getRawButton(Constants.LEFT_BUMPER));
 		SmartDashboard.putNumber("Logitech Left Y: ", logitech.getRawAxis(Constants.LEFT_Y));
 		SmartDashboard.putNumber("Logitech Right Y: ", logitech.getRawAxis(Constants.RIGHT_Y));
-		SmartDashboard.putNumber("Xbox Right Y: ", logitech.getRawAxis(Constants.RIGHT_Y));
-		SmartDashboard.putNumber("Xbox Right Trigger: ", logitech.getRawAxis(Constants.RIGHT_TRIGGER));
-		SmartDashboard.putNumber("Xbox Left Trigger: ", logitech.getRawAxis(Constants.LEFT_TRIGGER));
+		SmartDashboard.putNumber("Xbox Right Y: ", xbox.getRawAxis(Constants.RIGHT_Y));
+		SmartDashboard.putNumber("Xbox Right Trigger: ", xbox.getRawAxis(Constants.RIGHT_TRIGGER));
+		SmartDashboard.putNumber("Xbox Left Trigger: ", xbox.getRawAxis(Constants.LEFT_TRIGGER));
 	}
 }
