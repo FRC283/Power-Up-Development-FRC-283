@@ -144,7 +144,6 @@ public class LiftSubsystem
 	@Schema(Utilities283.XBOX_RIGHT_Y)
 	public void lift(double liftMagnitude)
 	{
-		liftMagnitude *= 0.75; //Cut lift speed in half
 		System.out.println("Lift Magnitude = " + liftMagnitude);
 		//REMINDER: "FALSE" ON THE LIMIT SWITCH IS HIT
 		if (upperLimitSwitch.get() == false && this.prevLimitState == false) //every cycle after the first that the limit is hit
