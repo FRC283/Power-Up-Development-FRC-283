@@ -19,8 +19,8 @@ public class Robot extends IterativeRobot
 		kRightLeftRight, 		//Drives forward, turns right, forward, left, forward, turn 90 degrees left, drop cube in switch
 		kAllLeft, 				//Drives forward, turns left, forward, right, forward, turn 90 degrees right, drop cube in switch
 		kAllRight, 				//Drives forward, turns right, forward, left, forward, turn 90 degrees left, drop cube in switch
-		kAlwaysRight,			//Schnaar's Plan: Right Side
-		kAlwaysLeft,			//Schnaar's Plan: Left Side
+		kAlwaysRight,			//Schnaar's Plan + Cube Drop: Right Side
+		kAlwaysLeft,			//Schnaar's Plan + Cube Drop: Left Side
 		kStop					//Does nothing
 	};
 	Joystick logitech;										   //
@@ -29,7 +29,7 @@ public class Robot extends IterativeRobot
 	DriveSubsystem drivetrain;								   //
 	LiftSubsystem liftSubsystem;							   //
 	PowerDistributionPanel pdp = new PowerDistributionPanel(); //
-	private AutoMode aM = AutoMode.kStop;					   //The actual chosen value of our autonomous
+	private AutoMode aM = AutoMode.kAlwaysRight;				   //The actual chosen value of our autonomous
 	String gameData;										   //Contains the data about the switch/scale colors given by FMS
 	@Override
 	public void robotInit() 
@@ -87,7 +87,7 @@ public class Robot extends IterativeRobot
 						autoStep++; //Next phase
 					break;
 					case 1:
-						drivetrain.drive(.25, .25, false); //Drive forwards at quarter power
+						drivetrain.drive(-0.50, -0.50, false); //Drive forwards at quarter power
 						if (autoTimer.get() > 3) //Wait until 3 seconds have passed
 						{
 							drivetrain.drive(0, 0, false); //Cut drive power
@@ -446,37 +446,128 @@ public class Robot extends IterativeRobot
 				break;
 				}
 			break;
+			*/
 			case kAlwaysLeft:
-				//
+				switch(autoStep)
 				{
-					if(gameData.charAt(0) == 'L')
-					{
-						drivetrain.leftDriveDistanceInit(150); //Drive forwards
-						drivetrain.rightDriveDistanceInit(150);
-					}
-					else
-					{
-						drivetrain.leftDriveDistanceInit(50); //Drive forwards
-						drivetrain.rightDriveDistanceInit(50);
-					}
+					case 0: //
+						autoTimer.stop(); //Safety measures to ensure timer is stopped
+						autoTimer.reset();
+						//System.out.println("Detected the first character as: " + gameData.charAt(0));
+						if (gameData.charAt(0) == 'L' || gameData.charAt(0) == 'R') //Making sure it's not null
+						{
+							if (gameData.charAt(0) == 'L') //If we're on the side with our team's plate
+							{
+								System.out.println("Detected left - its what we want");
+								autoStep = 0;
+								aM = AutoMode.kSimpleForwards; //Switch to a simple forward motion
+								//That will collide us into the switch fence and drop the cube in
+							}
+							else //Otherwise
+							{
+								drivetrain.drive(-0.5, -0.5, false); //Drive forwards
+								autoTimer.start();
+								autoStep++;
+							}
+						}
+					break;
+					case 1:
+						if (autoTimer.get() > 1) //After 1 second of driving forwards...
+						{
+							System.out.println("Successfully drove forwards");
+							autoStep++; //Next step
+							drivetrain.drive(0, 0, false); //Stop
+							autoTimer.stop();
+							autoTimer.reset();
+							autoTimer.start();
+						}
+					break;
+					case 2:
+						if (autoTimer.get() > 1) //After .5 seconds of being stopped
+						{
+							System.out.println("Successfully stopped");
+							autoStep++; //Next step
+							drivetrain.drive(-0.25, -0.25, false); //Begin going forwards again
+							autoTimer.stop();
+							autoTimer.reset();
+							autoTimer.start();
+						}
+					break;
+					case 3:
+						if (autoTimer.get() > 4) //After 2 seconds of driving forwards...
+						{
+							System.out.println("Successfully drove forwards for second time");
+							autoStep++; //Next step
+							drivetrain.drive(0, 0, false); //Stop
+							autoTimer.stop();
+							autoTimer.reset();
+						}
+					break;
+					case 4:
+						//Do nothing
+					break;
 				}
 			break;
 			case kAlwaysRight:
-				//
+				switch(autoStep)
 				{
-					if(gameData.charAt(0) == 'R')
-					{
-						drivetrain.leftDriveDistanceInit(150); //Drive forwards
-						drivetrain.rightDriveDistanceInit(150);
-					}
-					else
-					{
-						drivetrain.leftDriveDistanceInit(50); //Drive forwards
-						drivetrain.rightDriveDistanceInit(50);
-					}
+					case 0: //
+						autoTimer.stop(); //Safety measures to ensure timer is stopped
+						autoTimer.reset();
+						if (gameData.charAt(0) == 'L' || gameData.charAt(0) == 'R') //Making sure it's not null
+						{
+							if (gameData.charAt(0) == 'R') //If we're on the side with our team's plate
+							{
+								System.out.println("Detected right - it's what we want");
+								autoStep = 0;
+								aM = AutoMode.kSimpleForwards; //Switch to a simple forward motion
+								//That will collide us into the switch fence and drop the cube in
+							}
+							else //Otherwise
+							{
+								drivetrain.drive(-0.5, -0.5, false); //Drive forwards
+								autoTimer.start();
+								autoStep++;
+							}
+						}
+					break;
+					case 1:
+						if (autoTimer.get() > 1) //After 1 second of driving forwards...
+						{
+							System.out.println("Successfully drove forwards");
+							autoStep++; //Next step
+							drivetrain.drive(0, 0, false); //Stop
+							autoTimer.stop();
+							autoTimer.reset();
+							autoTimer.start();
+						}
+					break;
+					case 2:
+						if (autoTimer.get() > 1) //After .5 seconds of being stopped
+						{
+							System.out.println("Successfully stopped");
+							autoStep++; //Next step
+							drivetrain.drive(-0.25, -0.25, false); //Begin going forwards again
+							autoTimer.stop();
+							autoTimer.reset();
+							autoTimer.start();
+						}
+					break;
+					case 3:
+						if (autoTimer.get() > 4) //After 2 seconds of driving forwards...
+						{
+							System.out.println("Successfully drove forwards for second time");
+							autoStep++; //Next step
+							drivetrain.drive(0, 0, false); //Stop
+							autoTimer.stop();
+							autoTimer.reset();
+						}
+					break;
+					case 4:
+						//Do nothing
+					break;
 				}
 			break;
-			*/
 			case kStop:
 				//Do nothing
 			break;

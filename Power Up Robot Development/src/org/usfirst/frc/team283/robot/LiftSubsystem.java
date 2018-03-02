@@ -34,6 +34,8 @@ public class LiftSubsystem
 	 * Winch Controller    |   Reel In    |   Reel Out  |
 	 * Winch Encoder       |   ?          |   ?         |
 	 * Lift Encoder        |    Up/Down   |   Down/Up   |
+	 * Left Intake Wheel   |     Out      |     In      |
+	 * Right Intake Wheel  |    In        |      Out    |
 	 * 
 	 */
 	//Variables
@@ -196,10 +198,14 @@ public class LiftSubsystem
 		{
 			leftRollerController.set(rollerMagnitude);
 			rightRollerController.set(rollerMagnitude * -1);
-			if (leftRollerController.get() < AUTO_INTAKE_POWER)
-			{ leftRollerController.set(AUTO_INTAKE_POWER);}
-			if (rightRollerController.get() < AUTO_INTAKE_POWER)
-			{ rightRollerController.set(AUTO_INTAKE_POWER);}
+			
+			/*
+			if (Math.abs(rollerMagnitude) < .25)
+			{ 
+				leftRollerController.set(AUTO_INTAKE_POWER);
+				rightRollerController.set(-1 * AUTO_INTAKE_POWER);
+			}
+			*/
 		}
 	}
 	
@@ -210,21 +216,13 @@ public class LiftSubsystem
 	@Schema(Utilities283.LOGITECH_LEFT_BUMPER)
 	public void grip(boolean toggle)
 	{
-<<<<<<< HEAD
-		if (this.gripperTogglePrev == false && toggle == true) 		  //If we have a button PRESS event (rising edge)
-=======
 		if (this.gripperTogglePrev == false && toggle == true) //If we have a button PRESS event (rising edge)
->>>>>>> branch 'master' of https://github.com/FRC283/Power-Up-Development-FRC-283
 		{
 			armsSol.set(!armsSol.get()); 							  //Invert the value of the grip
 			//NOTE: When the arms go in, intakes begin to roll in at lowpower
 			//This happens in the periodic()
 		}
-<<<<<<< HEAD
-		this.gripperTogglePrev = toggle;							  //Update the previous value
-=======
-		this.gripperTogglePrev = toggle;					//Update the previous value
->>>>>>> branch 'master' of https://github.com/FRC283/Power-Up-Development-FRC-283
+		this.gripperTogglePrev = toggle;
 	}
 	
 	@Deprecated
