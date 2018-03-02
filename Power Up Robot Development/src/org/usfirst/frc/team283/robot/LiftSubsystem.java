@@ -24,7 +24,7 @@ public class LiftSubsystem
 	/*
 	 * 					   |     True     |     False   |
 	 * ----------------------------------------------------
-	 * Arms Solenoid  	   |  Retracted   |  Extended   |
+	 * Arms Solenoid  	   |  Extended    |    False    |
 	 * Lift Limit Switch   |  Unpressed	  |  Pressed    |
 	 * ---------------------------------------------------------
 	 * 					   |      +1      |      -1     |
@@ -87,7 +87,7 @@ public class LiftSubsystem
 	{
 		SmartDashboard.putNumber("Winch Encoder", winchEnc.get());
 		SmartDashboard.putNumber("Lift Encoder", liftEnc.get());
-		SmartDashboard.putBoolean("Arms are Closed", !armsSol.get());
+		SmartDashboard.putBoolean("Arms are Closed", armsSol.get());
 		SmartDashboard.putBoolean("State of Lift Limit", upperLimitSwitch.get());
 		SmartDashboard.putBoolean("Previous Limit State", prevLimitState);
 		SmartDashboard.putBoolean("Intakes are Rolling In", (liftController.get() > 0));
@@ -210,13 +210,21 @@ public class LiftSubsystem
 	@Schema(Utilities283.LOGITECH_LEFT_BUMPER)
 	public void grip(boolean toggle)
 	{
+<<<<<<< HEAD
 		if (this.gripperTogglePrev == false && toggle == true) 		  //If we have a button PRESS event (rising edge)
+=======
+		if (this.gripperTogglePrev == false && toggle == true) //If we have a button PRESS event (rising edge)
+>>>>>>> branch 'master' of https://github.com/FRC283/Power-Up-Development-FRC-283
 		{
 			armsSol.set(!armsSol.get()); 							  //Invert the value of the grip
 			//NOTE: When the arms go in, intakes begin to roll in at lowpower
 			//This happens in the periodic()
 		}
+<<<<<<< HEAD
 		this.gripperTogglePrev = toggle;							  //Update the previous value
+=======
+		this.gripperTogglePrev = toggle;					//Update the previous value
+>>>>>>> branch 'master' of https://github.com/FRC283/Power-Up-Development-FRC-283
 	}
 	
 	@Deprecated
