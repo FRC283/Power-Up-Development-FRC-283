@@ -113,9 +113,10 @@ public class DriveSubsystem
 	 * Drives the right drivetrain the specified number of inches
 	 * You must periodically call 'driveDistancePeriodic()'
 	 * @param inches - # of inches
+	 * @param powerCap - Maximum power to set
 	 */
 	@Deprecated
-	public void leftDriveDistanceInit(double inches)
+	public void leftDriveDistanceInit(double inches, double powerCap)
 	{
 		leftDriveTarget = inches;
 		leftCurrentlyControlling = true;
@@ -127,7 +128,7 @@ public class DriveSubsystem
 	 * @param inches - # of inches
 	 */
 	@Deprecated
-	public void rightDriveDistanceInit(double inches)
+	public void rightDriveDistanceInit(double inches, double powerCap)
 	{
 		rightDriveTarget = inches;
 		rightCurrentlyControlling = true;

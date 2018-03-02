@@ -18,6 +18,8 @@ public class LiftSubsystem
 	private static final double I_CONSTANT = 0;
 	/** PI Control continues until the error is below this */	
 	private static final double MAX_ALLOWABLE_ERROR = 1;
+	/** While grippers are in, they roll in at this speed */
+	private static final double AUTO_INTAKE_POWER = 0.25; 
 	//Signage Chart
 	/*
 	 * 					   |     True     |     False   |
@@ -90,7 +92,6 @@ public class LiftSubsystem
 		SmartDashboard.putBoolean("Previous Limit State", prevLimitState);
 		SmartDashboard.putBoolean("Intakes are Rolling In", (liftController.get() > 0));
 		SmartDashboard.putNumber("Previous Lift Magnitude", previousMag);
-		
 		
 		//Below: logic used during autonomous
 		if(liftCurrentlyControlling == false)
@@ -184,8 +185,22 @@ public class LiftSubsystem
 	@Schema(value = Utilities283.LOGITECH_LEFT_TRIGGER, desc = "expel boxes")
 	public void intake(double rollerMagnitude)
 	{
-		leftRollerController.set(Utilities283.deadzone(rollerMagnitude, ROLLER_DEADZONE));
-		rightRollerController.set(Utilities283.deadzone(rollerMagnitude, ROLLER_DEADZONE) * -1);
+
+		if (armsSol.get() == false)	//If the arms are open
+		{
+			leftRollerController.set(rollerMagnitude);
+			rightRollerController.set(rollerMagnitude * -1);
+			//^Regular Control
+		}
+		else //If arms are closed
+		{
+			leftRollerController.set(rollerMagnitude);
+			rightRollerController.set(rollerMagnitude * -1);
+			if (leftRollerController.get() < AUTO_INTAKE_POWER)
+			{ leftRollerController.set(AUTO_INTAKE_POWER);}
+			if (rightRollerController.get() < AUTO_INTAKE_POWER)
+			{ rightRollerController.set(AUTO_INTAKE_POWER);}
+		}
 	}
 	
 	/** 
@@ -195,11 +210,13 @@ public class LiftSubsystem
 	@Schema(Utilities283.LOGITECH_LEFT_BUMPER)
 	public void grip(boolean toggle)
 	{
-		if (this.gripperTogglePrev == false && armsSol.get() == true) //If we have a button PRESS event (rising edge)
+		if (this.gripperTogglePrev == false && toggle == true) 		  //If we have a button PRESS event (rising edge)
 		{
 			armsSol.set(!armsSol.get()); 							  //Invert the value of the grip
+			//NOTE: When the arms go in, intakes begin to roll in at lowpower
+			//This happens in the periodic()
 		}
-		this.gripperTogglePrev = armsSol.get();						  //Update the previous value
+		this.gripperTogglePrev = toggle;							  //Update the previous value
 	}
 	
 	@Deprecated

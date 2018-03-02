@@ -4,14 +4,14 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends IterativeRobot 
 {
 	//TODO: Signage Chart
-	int autoStep = 0;
-	boolean autoForward;
-	enum AutoMode 
+	int autoStep = 0;			//Phase of the automode (used to divide modes into steps)		
+	enum AutoMode 				//Your choice of automode
 	{
 		kSimpleForwards, 		//Uses timer logic to move past the base line
 		kForwards, 				//Uses distance logic to move past baseline
@@ -19,22 +19,25 @@ public class Robot extends IterativeRobot
 		kRightLeftRight, 		//Drives forward, turns right, forward, left, forward, turn 90 degrees left, drop cube in switch
 		kAllLeft, 				//Drives forward, turns left, forward, right, forward, turn 90 degrees right, drop cube in switch
 		kAllRight, 				//Drives forward, turns right, forward, left, forward, turn 90 degrees left, drop cube in switch
+		kAlwaysRight,			//Schnaar's Plan: Right Side
+		kAlwaysLeft,			//Schnaar's Plan: Left Side
 		kStop					//Does nothing
 	};
 	Joystick logitech;										   //
 	Joystick xbox;											   //
+	Timer autoTimer;										   //Used for various timing tasks
 	DriveSubsystem drivetrain;								   //
 	LiftSubsystem liftSubsystem;							   //
 	PowerDistributionPanel pdp = new PowerDistributionPanel(); //
-	private AutoMode aM = AutoMode.kStop;					   //
-	String gameData;										   //
+	private AutoMode aM = AutoMode.kStop;					   //The actual chosen value of our autonomous
+	String gameData;										   //Contains the data about the switch/scale colors given by FMS
 	@Override
 	public void robotInit() 
 	{
 		//Set this to true if you just want to do the move forwards autonomous
-		autoForward = true;
 		drivetrain = new DriveSubsystem();
 		liftSubsystem = new LiftSubsystem();
+		autoTimer = new Timer();
 		logitech = new Joystick(Constants.DRIVER_CONTROLLER_PORT);
 		xbox = new Joystick(Constants.OPERATOR_CONTROLLER_PORT);
 		gameData = DriverStation.getInstance().getGameSpecificMessage();
@@ -50,37 +53,55 @@ public class Robot extends IterativeRobot
 	@Override
 	public void autonomousPeriodic() 
 	{
-		while(aM == null) //while FMS is booting up and autonomous has not been chosen
+		/*
+		if(gameData.length() > 0)
 		{
-			if(gameData.length() > 0)
+			//Since the FMS returns YOUR field placement (as in alliance color setup) the value returned will be for your sides of the switch and scale from your perspective
+			if(gameData.charAt(0) == 'L' && gameData.charAt(1) == 'R')			//If FMS returns 'LRL' - We ignore last character
 			{
-				//Since the FMS returns YOUR field placement (as in alliance color setup) the value returned will be for your sides of the switch and scale from your perspective
-				if(gameData.charAt(0) == 'L' && gameData.charAt(1) == 'R')			//If FMS returns 'LRL' - We ignore last character
-				{
-					aM = AutoMode.kLeftRightLeft; 	//Set auto to 'LRL'
-				}
-				else if(gameData.charAt(0) == 'R' && gameData.charAt(1) == 'L')		//If FMS returns 'RLR' - We ignore last character
-				{
-					aM = AutoMode.kRightLeftRight;	//Set auto to 'RLR'
-				}
-				else if(gameData.charAt(0) == 'L' && gameData.charAt(1) == 'L') 	//If FMS returns 'LLL' - We ignore last character
-				{
-					aM = AutoMode.kAllLeft;			//Set auto to 'LLL'
-				}
-				else if(gameData.charAt(0) == 'R' && gameData.charAt(1) == 'R')		//If FMS returns 'RRR' - We ignore last character
-				{
-					aM = AutoMode.kAllRight;		//Set auto to 'RRR'
-				}
+				aM = AutoMode.kLeftRightLeft; 	//Set auto to 'LRL'
+			}
+			else if(gameData.charAt(0) == 'R' && gameData.charAt(1) == 'L')		//If FMS returns 'RLR' - We ignore last character
+			{
+				aM = AutoMode.kRightLeftRight;	//Set auto to 'RLR'
+			}
+			else if(gameData.charAt(0) == 'L' && gameData.charAt(1) == 'L') 	//If FMS returns 'LLL' - We ignore last character
+			{
+				aM = AutoMode.kAllLeft;			//Set auto to 'LLL'
+			}
+			else if(gameData.charAt(0) == 'R' && gameData.charAt(1) == 'R')		//If FMS returns 'RRR' - We ignore last character
+			{
+				aM = AutoMode.kAllRight;		//Set auto to 'RRR'
 			}
 		}
+		*/
 		drivetrain.periodic();
 		liftSubsystem.periodic();
 		switch (aM) //Executes an autonomous based on the values of aM
 		{
-			case kSimpleForwards:
-				//Simple timer-based forward movement
+			case kSimpleForwards: //Simple timer-based forward movement
+				switch (autoStep)
+				{
+					case 0:
+						autoTimer.start(); //Start timer
+						autoStep++; //Next phase
+					break;
+					case 1:
+						drivetrain.drive(.25, .25, false); //Drive forwards at quarter power
+						if (autoTimer.get() > 3) //Wait until 3 seconds have passed
+						{
+							drivetrain.drive(0, 0, false); //Cut drive power
+							autoStep++; //Advance to next phase
+						}
+					break;
+					case 2:
+						//Do nothing - this auto is done
+						autoTimer.stop();
+						autoTimer.reset();
+					break;
+				}
 			break;
-		/*
+			/*
 			case kForwards:
 				switch (autoStep) //Determines the phase of the autonomous
 				{
@@ -425,9 +446,43 @@ public class Robot extends IterativeRobot
 				break;
 				}
 			break;
-			case kStop:
+			case kAlwaysLeft:
+				//
+				{
+					if(gameData.charAt(0) == 'L')
+					{
+						drivetrain.leftDriveDistanceInit(150); //Drive forwards
+						drivetrain.rightDriveDistanceInit(150);
+					}
+					else
+					{
+						drivetrain.leftDriveDistanceInit(50); //Drive forwards
+						drivetrain.rightDriveDistanceInit(50);
+					}
+				}
+			break;
+			case kAlwaysRight:
+				//
+				{
+					if(gameData.charAt(0) == 'R')
+					{
+						drivetrain.leftDriveDistanceInit(150); //Drive forwards
+						drivetrain.rightDriveDistanceInit(150);
+					}
+					else
+					{
+						drivetrain.leftDriveDistanceInit(50); //Drive forwards
+						drivetrain.rightDriveDistanceInit(50);
+					}
+				}
 			break;
 			*/
+			case kStop:
+				//Do nothing
+			break;
+			default:
+				//Do nothing
+			break;
 		}
 	}
 	
