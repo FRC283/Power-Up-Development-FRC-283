@@ -98,7 +98,7 @@ public class DriveSubsystem
 	 * @param gearShiftValue - state of the button to execute shifting gears
 	 *
 	 */
-	@Schema(Utilities283.LOGITECH_LEFT_BUMPER)
+	@Schema(Utilities283.LOGITECH_RIGHT_STICK_BUTTON)
 	public void shiftGear(boolean gearShiftValue)
 	{
 		if (lastGearShiftState == false && gearShiftValue == true)

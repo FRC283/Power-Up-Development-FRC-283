@@ -53,6 +53,9 @@ public class LiftSubsystem
 	/** determines if winch is ready to reel in*/
 	boolean winchUnlocked = false;
 	
+	/** Records the previous state of the toggle boolean for the grippers */
+	boolean gripperTogglePrev = false;
+	
 	//Components
 	Spark leftRollerController;
 	Spark rightRollerController;
@@ -82,7 +85,7 @@ public class LiftSubsystem
 	{
 		SmartDashboard.putNumber("Winch Encoder", winchEnc.get());
 		SmartDashboard.putNumber("Lift Encoder", liftEnc.get());
-		SmartDashboard.putBoolean("Arm Grip State", armsSol.get());
+		SmartDashboard.putBoolean("Arms are Closed", !armsSol.get());
 		SmartDashboard.putBoolean("State of Lift Limit", upperLimitSwitch.get());
 		SmartDashboard.putBoolean("Previous Limit State", prevLimitState);
 		SmartDashboard.putBoolean("Intakes are Rolling In", (liftController.get() > 0));
@@ -177,8 +180,8 @@ public class LiftSubsystem
 	 * 
 	 * @param rollerMagnitude - magnitude of rollers
 	 */
-	@Schema(value = Utilities283.XBOX_RIGHT_TRIGGER, desc = "Intake boxes")
-	@Schema(value = Utilities283.XBOX_LEFT_TRIGGER, desc = "Expel boxes")
+	@Schema(value = Utilities283.LOGITECH_RIGHT_TRIGGER, desc = "intake boxes")
+	@Schema(value = Utilities283.LOGITECH_LEFT_TRIGGER, desc = "expel boxes")
 	public void intake(double rollerMagnitude)
 	{
 		leftRollerController.set(Utilities283.deadzone(rollerMagnitude, ROLLER_DEADZONE));
@@ -186,23 +189,17 @@ public class LiftSubsystem
 	}
 	
 	/** 
-	 * 
-	 * @param grab - state of button to grab cube
-	 * @param release - state of button to release cube
+	 * Toggles the position of the gripper arms
+	 * @toggle - status of toggle button
 	 */
-	@Schema(value = Utilities283.XBOX_RIGHT_BUMPER, desc = "Grab box")
-	@Schema(value = Utilities283.XBOX_LEFT_BUMPER, desc = "Release box")
-	public void grip(boolean grab, boolean release)
+	@Schema(Utilities283.LOGITECH_LEFT_BUMPER)
+	public void grip(boolean toggle)
 	{
-		if(grab == true)
+		if (this.gripperTogglePrev == false && armsSol.get() == true) //If we have a button PRESS event (rising edge)
 		{
-			armsSol.set(true);			
+			armsSol.set(!armsSol.get()); 							  //Invert the value of the grip
 		}
-		
-		else if(release == true)
-		{
-			armsSol.set(false);		
-		}
+		this.gripperTogglePrev = armsSol.get();						  //Update the previous value
 	}
 	
 	@Deprecated
