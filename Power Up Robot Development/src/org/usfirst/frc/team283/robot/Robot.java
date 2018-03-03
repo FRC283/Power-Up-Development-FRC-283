@@ -29,7 +29,7 @@ public class Robot extends IterativeRobot
 	DriveSubsystem drivetrain;								   //
 	LiftSubsystem liftSubsystem;							   //
 	PowerDistributionPanel pdp = new PowerDistributionPanel(); //
-	private AutoMode aM = AutoMode.kAlwaysLeft;				   //The actual chosen value of our autonomous
+	private AutoMode aM = AutoMode.kSimpleForwards;				   //The actual chosen value of our autonomous
 	String gameData;										   //Contains the data about the switch/scale colors given by FMS
 	@Override
 	public void robotInit() 
