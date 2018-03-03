@@ -30,7 +30,7 @@ public class Robot extends IterativeRobot
 	DriveSubsystem drivetrain;								   //
 	LiftSubsystem liftSubsystem;							   //
 	PowerDistributionPanel pdp = new PowerDistributionPanel(); //
-	private AutoMode aM = AutoMode.kAlwaysLeft;				   //The actual chosen value of our autonomous
+	private AutoMode aM = AutoMode.kAutoQuest;				   //The actual chosen value of our autonomous
 	String gameData;										   //Contains the data about the switch/scale colors given by FMS
 	@Override
 	public void robotInit() 
@@ -579,34 +579,34 @@ public class Robot extends IterativeRobot
 							autoStep++;
 							if(gameData.charAt(0) == 'L')
 							{
-								drivetrain.drive(-0.5, -0.65, false);
+								drivetrain.drive(-0.55, -0.70, false);
 							}
 							else if(gameData.charAt(0) == 'R')
 							{
-								drivetrain.drive(-0.65, -0.5, false);
+								drivetrain.drive(-0.75, -0.55, false);
 							}
 							autoTimer.stop();
 							autoTimer.reset();
 							autoTimer.start();
 						}
 					break;
-					case 1: //Keep going forward for 3 seconds the jolt backward
-						autoStep++;
-						if(autoTimer.get() > 3)
+					/*case 1: //Keep going forward for 3 seconds the jolt backward
+						autoStep++						if(autoTimer.get() > 3)
 						{
 							drivetrain.drive(0.8, 0.8, false);
 						}
 						autoTimer.stop();
 						autoTimer.reset();
 						autoTimer.start();
-					break;
-					case 2: //Jolting backward then stopping to finish Auto
-						if(autoTimer.get() > 0.1)
+					break;*/
+					case 1: //Jolting backward then stopping to finish Auto
+						//System.out.println("Time: " + autoTimer.get());
+						if(autoTimer.get() > 1.4)
 						{
 							drivetrain.drive(0, 0, false);
+							autoTimer.stop();
+							autoTimer.reset();
 						}
-						autoTimer.stop();
-						autoTimer.reset();
 					break;
 				}
 			break;
