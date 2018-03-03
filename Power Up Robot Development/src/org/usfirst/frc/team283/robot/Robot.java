@@ -30,7 +30,7 @@ public class Robot extends IterativeRobot
 	DriveSubsystem drivetrain;								   //
 	LiftSubsystem liftSubsystem;							   //
 	PowerDistributionPanel pdp = new PowerDistributionPanel(); //
-	private AutoMode aM = AutoMode.kSimpleForwards;			   //The actual chosen value of our autonomous
+	private AutoMode aM = AutoMode.kAlwaysLeft;				   //The actual chosen value of our autonomous
 	String gameData;										   //Contains the data about the switch/scale colors given by FMS
 	@Override
 	public void robotInit() 
@@ -466,7 +466,7 @@ public class Robot extends IterativeRobot
 							}
 							else //Otherwise
 							{
-								drivetrain.drive(-0.5, -0.5, false); //Drive forwards
+								drivetrain.drive(-0.8, -0.5, false); //Drive forwards
 								autoTimer.start();
 								autoStep++;
 							}
@@ -488,7 +488,7 @@ public class Robot extends IterativeRobot
 						{
 							System.out.println("Successfully stopped");
 							autoStep++; //Next step
-							drivetrain.drive(-0.25, -0.25, false); //Begin going forwards again
+							drivetrain.drive(-0.50, -0.25, false); //Begin going forwards again
 							autoTimer.stop();
 							autoTimer.reset();
 							autoTimer.start();
@@ -526,7 +526,7 @@ public class Robot extends IterativeRobot
 							}
 							else //Otherwise
 							{
-								drivetrain.drive(-0.6, -0.5, false); //Drive forwards
+								drivetrain.drive(-0.5, -0.5, false); //Drive forwards
 								autoTimer.start();
 								autoStep++;
 							}
@@ -548,7 +548,7 @@ public class Robot extends IterativeRobot
 						{
 							System.out.println("Successfully stopped");
 							autoStep++; //Next step
-							drivetrain.drive(-0.35, -0.25, false); //Begin going forwards again
+							drivetrain.drive(-0.25, -0.25, false); //Begin going forwards again
 							autoTimer.stop();
 							autoTimer.reset();
 							autoTimer.start();
