@@ -150,11 +150,11 @@ public class LiftSubsystem
 		{
 			if (liftMagnitude > 0 && this.previousMag < 0) //no negative mag
 			{
-				liftController.set(Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, liftMagnitude));
+				liftController.set(-1 * Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, liftMagnitude));
 			}
 			else if (liftMagnitude < 0 && this.previousMag > 0) // no positive mag
 			{
-				liftController.set(Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, liftMagnitude));
+				liftController.set(-1 * Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, liftMagnitude));
 			}
 			else
 			{
@@ -172,7 +172,7 @@ public class LiftSubsystem
 		}
 		else
 		{
-			liftController.set(Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, liftMagnitude));
+			liftController.set(-1 * Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, liftMagnitude));
 		}
 		prevLimitState = upperLimitSwitch.get();
 		//liftController.set(Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, liftMagnitude));

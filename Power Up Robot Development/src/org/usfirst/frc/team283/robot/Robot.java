@@ -21,6 +21,7 @@ public class Robot extends IterativeRobot
 		kAllRight, 				//Drives forward, turns right, forward, left, forward, turn 90 degrees left, drop cube in switch
 		kAlwaysRight,			//Schnaar's Plan + Cube Drop: Right Side
 		kAlwaysLeft,			//Schnaar's Plan + Cube Drop: Left Side
+		kAutoQuest,				//Start in center. Turn left or right to get the cube in the switch
 		kStop					//Does nothing
 	};
 	Joystick logitech;										   //
@@ -29,7 +30,7 @@ public class Robot extends IterativeRobot
 	DriveSubsystem drivetrain;								   //
 	LiftSubsystem liftSubsystem;							   //
 	PowerDistributionPanel pdp = new PowerDistributionPanel(); //
-	private AutoMode aM = AutoMode.kSimpleForwards;				   //The actual chosen value of our autonomous
+	private AutoMode aM = AutoMode.kSimpleForwards;			   //The actual chosen value of our autonomous
 	String gameData;										   //Contains the data about the switch/scale colors given by FMS
 	@Override
 	public void robotInit() 
@@ -543,7 +544,7 @@ public class Robot extends IterativeRobot
 						}
 					break;
 					case 2:
-						if (autoTimer.get() > 1) //After .5 seconds of being stopped
+						if (autoTimer.get() > 1) //After 1 seconds of being stopped
 						{
 							System.out.println("Successfully stopped");
 							autoStep++; //Next step
@@ -554,7 +555,7 @@ public class Robot extends IterativeRobot
 						}
 					break;
 					case 3:
-						if (autoTimer.get() > 4) //After 2 seconds of driving forwards...
+						if (autoTimer.get() > 4) //After 4 seconds of driving forwards...
 						{
 							System.out.println("Successfully drove forwards for second time");
 							autoStep++; //Next step
@@ -565,6 +566,47 @@ public class Robot extends IterativeRobot
 					break;
 					case 4:
 						//Do nothing
+					break;
+				}
+			break;
+			case kAutoQuest:
+				switch(autoStep)
+				{
+					case 0:
+						if (gameData.charAt(0) == 'L' || gameData.charAt(0) == 'R') //Making sure it's not null
+						{
+							System.out.println("Switch goal is on the " + gameData.charAt(0) + " side.");
+							autoStep++;
+							if(gameData.charAt(0) == 'L')
+							{
+								drivetrain.drive(-0.5, -0.65, false);
+							}
+							else if(gameData.charAt(0) == 'R')
+							{
+								drivetrain.drive(-0.65, -0.5, false);
+							}
+							autoTimer.stop();
+							autoTimer.reset();
+							autoTimer.start();
+						}
+					break;
+					case 1: //Keep going forward for 3 seconds the jolt backward
+						autoStep++;
+						if(autoTimer.get() > 3)
+						{
+							drivetrain.drive(0.8, 0.8, false);
+						}
+						autoTimer.stop();
+						autoTimer.reset();
+						autoTimer.start();
+					break;
+					case 2: //Jolting backward then stopping to finish Auto
+						if(autoTimer.get() > 0.1)
+						{
+							drivetrain.drive(0, 0, false);
+						}
+						autoTimer.stop();
+						autoTimer.reset();
 					break;
 				}
 			break;
