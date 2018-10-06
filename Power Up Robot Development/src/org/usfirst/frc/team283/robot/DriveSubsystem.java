@@ -229,11 +229,11 @@ public class DriveSubsystem
 		}
 		if(Math.abs(rightError) < MAX_ALLOWABLE_ERROR && Math.abs(leftError) < MAX_ALLOWABLE_ERROR)
 		{
-			return true;
+			return true; //Returns true on function for auto for loop
 		}
 		else 
 		{
-			return false;
+			return false;//Returns false on function for auto for loop 
 		}
 		//Nothing happens if this is false
 	}
