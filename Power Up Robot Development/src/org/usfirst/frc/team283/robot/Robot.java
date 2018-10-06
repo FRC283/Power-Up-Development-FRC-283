@@ -129,29 +129,27 @@ public class Robot extends IterativeRobot
 						{"Forward","Left","Forward","Right","Forward"},		//Drive Station 3 Right Auto Values
 						{"30",     "90",  "30",     "90",   "30"}
 					  };
-				/*if(gameData.charAt(0) == 'L')							//Read gameData for switch location on L
-				{
-					string[][] DS1Array = DS1L.clone();					//Clone Movement Array to make Processing Common
-				}
-				else if(gameData.charAt(0) == 'R') 						//Read gameData for switch location on R
-				{
-					string[][] DS1Array = DS1R.clone();					//Clone Movement Array to make Processing Common
-				}*/
+				
 				String[][] DS1Array = (gameData.charAt(0) == 'L') ? DS1L.clone() : 
 					((gameData.charAt(0) == 'R') ? DS1R.clone() : null); // Reads gameData and clones the movement array accordingly
-				for(int i = 0;i < DS1Array[0].length; i++)
+	
+				for(int i = 0;i < DS1Array[0].length;)
 				{
-					if(DS1Array[0][i] == "Forward")						//If MoveName = Forward, drive forward for DS1Array[1][i] seconds
+					if(drivetrain.driveDistancePeriodic() ==  true)
 					{
-						drivetrain.EncDrive(Double.valueOf(DS1Array[1][i]));
-					}
-					else if(DS1Array[0][i] == "Left")					//If MoveName = Left, turn Left for DS1Array[1][i] degrees
-					{
-						drivetrain.turn(Double.valueOf(DS1Array[1][i]),"left");
-					}
-					else if(DS1Array[0][i] == "Right")					//If MoveName = Right, turn Right for DS1Array[1][i] degrees
-					{
-						drivetrain.turn(Double.valueOf(DS1Array[1][i]),"right");						
+						++i;
+						if(DS1Array[0][i] == "Forward")						//If MoveName = Forward, drive forward for DS1Array[1][i] seconds
+						{
+							drivetrain.EncDrive(Double.valueOf(DS1Array[1][i]));
+						}
+						else if(DS1Array[0][i] == "Left")					//If MoveName = Left, turn Left for DS1Array[1][i] degrees
+						{
+							drivetrain.turn(Double.valueOf(DS1Array[1][i]),"left");
+						}
+						else if(DS1Array[0][i] == "Right")					//If MoveName = Right, turn Right for DS1Array[1][i] degrees
+						{
+							drivetrain.turn(Double.valueOf(DS1Array[1][i]),"right");						
+						}
 					}
 				}
 			
