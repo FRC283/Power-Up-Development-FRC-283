@@ -54,6 +54,10 @@ public class DriveSubsystem
 	double aggrLeftError = 0;
 	/** accumulation of error on right side */
 	double aggrRightError = 0;
+
+	//Power Caps
+	private double leftPowerCap = 1;
+	private double rightPowerCap = 1;
 	
 	//Actuators\Sensors
 	Spark leftController;
@@ -92,6 +96,35 @@ public class DriveSubsystem
 		//SmartDashboard.putNumber("Left Magnitude", leftMagnitude);
 		//SmartDashboard.putNumber("Right Magnitude", rightMagnitude);
 	}
+	public void EncDrive(double distance)
+	{
+		int radius = 6;
+		double circ = Math.PI * radius * radius;
+		double resolution = 360;
+		double dots = distance /(circ/resolution);
+		leftDriveDistanceInit(dots,0.5);
+		rightDriveDistanceInit(dots,0.5);
+	}
+	public void turn(double degrees, String direction)
+	{
+		int radius = 6;
+		double circ = Math.PI * radius * radius;
+		double resolution = 360;
+		double width = 36;
+		double dots = ((degrees/360)*(2 * Math.PI * width))/(circ/resolution);
+		if(direction == "Right")
+		{
+			rightDriveDistanceInit(dots,0.5);
+		}
+		else if(direction == "Left")
+		{
+			leftDriveDistanceInit(dots,0.5);
+		}
+		else
+		{
+			
+		}
+	}
 	
 	/**
 	 * Shifts the drive gear
@@ -120,6 +153,17 @@ public class DriveSubsystem
 	{
 		leftDriveTarget = inches;
 		leftCurrentlyControlling = true;
+		this.leftPowerCap = powerCap;
+	}
+	
+	/**
+	 * Drives the left drivetrain the specified number of inches
+	 * You must periodically call 'driveDistancePeriodic()'
+	 * @param inches
+	 */
+	public void leftDriveDistanceInit(double inches)
+	{
+		leftDriveDistanceInit(inches, 1);
 	}
 	
 	/**
@@ -132,8 +176,18 @@ public class DriveSubsystem
 	{
 		rightDriveTarget = inches;
 		rightCurrentlyControlling = true;
+		this.rightPowerCap = powerCap;
 	}
 	
+	/**
+	 * Drives the left drivetrain the specified number of inches
+	 * You must periodically call 'driveDistancePeriodic()' 
+	 * @param inches
+	 */
+	public void rightDriveDistanceInit(double inches)
+	{
+		rightDriveDistanceInit(inches, 1);
+	}
 	/**
 	 * Continuously updates both of the drive motors for target distance 
 	 */

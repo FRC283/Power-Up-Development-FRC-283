@@ -22,8 +22,10 @@ public class Robot extends IterativeRobot
 		kAlwaysRight,			//Schnaar's Plan + Cube Drop: Right Side
 		kAlwaysLeft,			//Schnaar's Plan + Cube Drop: Left Side
 		kAutoQuest,				//Start in center. Turn left or right to get the cube in the switch
-		kStop					//Does nothing
+		kStop,					//Does nothing
+		kDS1ForLoop
 	};
+	int[] DS1Array = new int[] {1};
 	Joystick logitech;										   //
 	Joystick xbox;											   //
 	Timer autoTimer;										   //Used for various timing tasks
@@ -101,7 +103,58 @@ public class Robot extends IterativeRobot
 						autoTimer.reset();
 					break;
 				}
-			break;
+				
+			case kDS1ForLoop:
+				String[][] DS1L = {
+						{"Forward","Left","Forward","Right","Forward"},		//Drive Station 1 Left Auto Values
+						{"36",     "90",  "30",     "90",   "30"}
+					  };
+	String[][] DS1R = {
+						{"Forward","Left","Forward","Right","Forward"},		//Drive Station 1 Right Auto Values
+						{"30",     "90",  "30",     "90",   "30"}
+					  };
+	String[][] DS2L = {
+						{"Forward","Left","Forward","Right","Forward"},		//Drive Station 2 Left Auto Values
+						{"30",     "90",  "30",     "90",   "30"}
+					  };
+	String[][] DS2R = {
+						{"Forward","Left","Forward","Right","Forward"},		//Drive Station 2 Right Auto Values
+						{"30",     "90",  "30",     "90",   "30"}
+					  };
+	String[][] DS3L = {
+						{"Forward","Left","Forward","Right","Forward"},		//Drive Station 3 Left Auto Values
+						{"30",     "90",  "30",     "90",   "30"}
+					  };
+	String[][] DS3R = {
+						{"Forward","Left","Forward","Right","Forward"},		//Drive Station 3 Right Auto Values
+						{"30",     "90",  "30",     "90",   "30"}
+					  };
+				/*if(gameData.charAt(0) == 'L')							//Read gameData for switch location on L
+				{
+					string[][] DS1Array = DS1L.clone();					//Clone Movement Array to make Processing Common
+				}
+				else if(gameData.charAt(0) == 'R') 						//Read gameData for switch location on R
+				{
+					string[][] DS1Array = DS1R.clone();					//Clone Movement Array to make Processing Common
+				}*/
+				String[][] DS1Array = (gameData.charAt(0) == 'L') ? DS1L.clone() : 
+					((gameData.charAt(0) == 'R') ? DS1R.clone() : null); // Reads gameData and clones the movement array accordingly
+				for(int i = 0;i < DS1Array[0].length; i++)
+				{
+					if(DS1Array[0][i] == "Forward")						//If MoveName = Forward, drive forward for DS1Array[1][i] seconds
+					{
+						drivetrain.EncDrive(Double.valueOf(DS1Array[1][i]));
+					}
+					else if(DS1Array[0][i] == "Left")					//If MoveName = Left, turn Left for DS1Array[1][i] degrees
+					{
+						drivetrain.turn(Double.valueOf(DS1Array[1][i]),"left");
+					}
+					else if(DS1Array[0][i] == "Right")					//If MoveName = Right, turn Right for DS1Array[1][i] degrees
+					{
+						drivetrain.turn(Double.valueOf(DS1Array[1][i]),"right");						
+					}
+				}
+			
 			/*
 			case kForwards:
 				switch (autoStep) //Determines the phase of the autonomous
