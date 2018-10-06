@@ -59,10 +59,6 @@ public class DriveSubsystem
 	private double leftPowerCap = 1;
 	private double rightPowerCap = 1;
 	
-	//Done
-	public Boolean doneR;
-	public Boolean doneL;
-	
 	//Actuators\Sensors
 	Spark leftController;
 	Spark rightController;
@@ -213,7 +209,6 @@ public class DriveSubsystem
 			{
 				leftController.set(-P_CONSTANT * leftError + -I_CONSTANT * aggrLeftError);
 				aggrLeftError += leftError;
-				doneL = false;
 			}
 		}
 		//Nothing happens if this is false
@@ -225,13 +220,11 @@ public class DriveSubsystem
 			{
 				rightCurrentlyControlling = false; //Stop controlling
 				rightController.set(0);
-				doneR = true;
 			}
 			else
 			{
 				rightController.set(-P_CONSTANT * rightError + -I_CONSTANT * aggrRightError);
 				aggrRightError += rightError;
-				doneR = false;
 			}
 		}
 		if(Math.abs(rightError) < MAX_ALLOWABLE_ERROR && Math.abs(leftError) < MAX_ALLOWABLE_ERROR)

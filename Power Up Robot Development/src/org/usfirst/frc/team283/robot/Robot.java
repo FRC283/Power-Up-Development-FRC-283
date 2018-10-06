@@ -106,29 +106,29 @@ public class Robot extends IterativeRobot
 				
 			case kDS1ForLoop:
 				String[][] DS1L = {
-						{"Forward","Left","Forward","Right","Forward"},		//Drive Station 1 Left Auto Values
-						{"36",     "90",  "30",     "90",   "30"}
-					  };
-	String[][] DS1R = {
-						{"Forward","Left","Forward","Right","Forward"},		//Drive Station 1 Right Auto Values
-						{"30",     "90",  "30",     "90",   "30"}
-					  };
-	String[][] DS2L = {
-						{"Forward","Left","Forward","Right","Forward"},		//Drive Station 2 Left Auto Values
-						{"30",     "90",  "30",     "90",   "30"}
-					  };
-	String[][] DS2R = {
-						{"Forward","Left","Forward","Right","Forward"},		//Drive Station 2 Right Auto Values
-						{"30",     "90",  "30",     "90",   "30"}
-					  };
-	String[][] DS3L = {
-						{"Forward","Left","Forward","Right","Forward"},		//Drive Station 3 Left Auto Values
-						{"30",     "90",  "30",     "90",   "30"}
-					  };
-	String[][] DS3R = {
-						{"Forward","Left","Forward","Right","Forward"},		//Drive Station 3 Right Auto Values
-						{"30",     "90",  "30",     "90",   "30"}
-					  };
+									{"Forward","Left","Forward","Right","Forward"},		//Drive Station 1 Left Auto Values
+									{"36",     "90",  "30",     "90",   "30"}
+					  			  };
+				String[][] DS1R = {
+									{"Forward","Left","Forward","Right","Forward"},		//Drive Station 1 Right Auto Values
+									{"30",     "90",  "30",     "90",   "30"}
+								  };
+				String[][] DS2L = {
+									{"Forward","Left","Forward","Right","Forward"},		//Drive Station 2 Left Auto Values
+									{"30",     "90",  "30",     "90",   "30"}
+					  			  };
+				String[][] DS2R = {
+									{"Forward","Left","Forward","Right","Forward"},		//Drive Station 2 Right Auto Values
+									{"30",     "90",  "30",     "90",   "30"}
+					  			  };
+				String[][] DS3L = {
+									{"Forward","Left","Forward","Right","Forward"},		//Drive Station 3 Left Auto Values
+									{"30",     "90",  "30",     "90",   "30"}
+								  };
+				String[][] DS3R = {
+									{"Forward","Left","Forward","Right","Forward"},		//Drive Station 3 Right Auto Values
+									{"30",     "90",  "30",     "90",   "30"}
+								  };
 				
 				String[][] DS1Array = (gameData.charAt(0) == 'L') ? DS1L.clone() : 
 					((gameData.charAt(0) == 'R') ? DS1R.clone() : null); // Reads gameData and clones the movement array accordingly
