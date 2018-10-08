@@ -96,6 +96,15 @@ public class DriveSubsystem
 		//SmartDashboard.putNumber("Left Magnitude", leftMagnitude);
 		//SmartDashboard.putNumber("Right Magnitude", rightMagnitude);
 	}
+	/**
+	 * Passes commands to leftDriveDistanceInit and rightDriveDistanceInit
+	 * @param distance - Holds the distance desired in Inches
+	 * @param radius - Radius of the wheels
+	 * @param circ - Circumference of the wheels based on radius
+	 * @param resolution - Resolution of the Encoders
+	 * @param dots - Dots needed to reach distance in inches (distance/(circ/resolution))
+	 * @author Christian
+	 */
 	public void EncDrive(double distance)
 	{
 		int radius = 6;
@@ -105,6 +114,17 @@ public class DriveSubsystem
 		leftDriveDistanceInit(dots,0.5);
 		rightDriveDistanceInit(dots,0.5);
 	}
+	/**
+	 * Passes commands to driveDistancePeriodic() to turn # degrees based on arc length
+	 * @param degrees - # of degrees desired to turn
+	 * @param direction - Left or Right
+	 * @param radius - Radius of the wheels
+	 * @param circ - Circumference of the wheels based on radius
+	 * @param resolution - Resolution of the Encoders
+	 * @param width - Width of the robot in inches
+	 * @param dots - Dots needed to reach distance on arc length in inches (((degrees/360)*(2*PI*width))/(circ/resolution))
+	 * @author Christian
+	 */
 	public void turn(double degrees, String direction)
 	{
 		int radius = 6;
@@ -112,11 +132,11 @@ public class DriveSubsystem
 		double resolution = 360;
 		double width = 36;
 		double dots = ((degrees/360)*(2 * Math.PI * width))/(circ/resolution);
-		if(direction == "Right")
+		if(direction == "right")
 		{
 			rightDriveDistanceInit(dots,0.5);
 		}
-		else if(direction == "Left")
+		else if(direction == "left")
 		{
 			leftDriveDistanceInit(dots,0.5);
 		}

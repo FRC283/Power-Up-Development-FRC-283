@@ -138,7 +138,7 @@ public class Robot extends IterativeRobot
 					if(drivetrain.driveDistancePeriodic() ==  true) 		//Wait for condition
 					{
 						++i;
-						if(DS1Array[0][i] == "Forward")						//If MoveName = Forward, drive forward for DS1Array[1][i] seconds
+						if(DS1Array[0][i] == "Forward")						//If MoveName = Forward, drive forward for DS1Array[1][i] inches
 						{
 							drivetrain.EncDrive(Double.valueOf(DS1Array[1][i]));
 						}
