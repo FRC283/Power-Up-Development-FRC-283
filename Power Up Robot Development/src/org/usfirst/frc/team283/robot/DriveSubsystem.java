@@ -105,7 +105,7 @@ public class DriveSubsystem
 	 * @param dots - Dots needed to reach distance in inches (distance/(circ/resolution))
 	 * @author Christian
 	 */
-	public void EncDrive(double distance)
+	public void EncDrive(double distance) //Calculates encoder "dots" needed to move # of inches
 	{
 		int radius = 6;
 		double circ = Math.PI * radius * radius;
@@ -125,7 +125,7 @@ public class DriveSubsystem
 	 * @param dots - Dots needed to reach distance on arc length in inches (((degrees/360)*(2*PI*width))/(circ/resolution))
 	 * @author Christian
 	 */
-	public void turn(double degrees, String direction)
+	public void turn(double degrees, String direction) //Calculates encoder "dots" needed to turn # of degrees
 	{
 		int radius = 6;
 		double circ = Math.PI * radius * radius;
