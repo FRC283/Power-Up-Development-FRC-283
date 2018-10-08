@@ -135,7 +135,7 @@ public class Robot extends IterativeRobot
 	
 				for(int i = 0;i < DS1Array[0].length;)
 				{
-					if(drivetrain.driveDistancePeriodic() ==  true) 		//Wait for condition
+					if(drivetrain.driveDistancePeriodic() == true) 		//Wait for condition
 					{
 						++i;												//Increment only when condition is met
 						if(DS1Array[0][i] == "Forward")						//If MoveName = Forward, drive forward for DS1Array[1][i] inches

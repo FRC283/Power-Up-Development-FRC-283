@@ -125,7 +125,7 @@ public class DriveSubsystem
 	 * @param dots - Dots needed to reach distance on arc length in inches (((degrees/360)*(2*PI*width))/(circ/resolution))
 	 * @author Christian
 	 */
-	public void turn(double degrees, String direction) //Calculates encoder "dots" needed to turn # of degrees
+	public void turn(double degrees, String direction) // Calculates encoder "dots" needed to turn # of degrees
 	{
 		int radius = 6;
 		double circ = Math.PI * radius * radius;
