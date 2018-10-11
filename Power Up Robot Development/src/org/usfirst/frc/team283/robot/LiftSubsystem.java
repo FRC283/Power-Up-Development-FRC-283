@@ -20,6 +20,8 @@ public class LiftSubsystem
 	private static final double MAX_ALLOWABLE_ERROR = 1;
 	/** While grippers are in, they roll in at this speed */
 	private static final double AUTO_INTAKE_POWER = 0.25; 
+	/** Magnitude at which the lift will decrease controller input - NOT TESTED*/
+	public static final double CONTROL_MAGNITUDE_DECREASE = 0.005;
 	//Signage Chart
 	/*
 	 * 					   |     True     |     False   |
@@ -60,6 +62,15 @@ public class LiftSubsystem
 	/** Records the previous state of the toggle boolean for the grippers */
 	boolean gripperTogglePrev = false;
 	
+	///** Records the previous controller magnitude */
+	//double prevLiftMagnitude = 0;
+	
+	/** Records the magnitude at which the lift will stop at */
+	double liftTarget = 0;
+	
+	/** Value at which the Lift Controller will be set to */
+	double thisLoop = 0;
+	
 	//Components
 	Spark leftRollerController;
 	Spark rightRollerController;
@@ -94,7 +105,6 @@ public class LiftSubsystem
 		SmartDashboard.putBoolean("Previous Limit State", prevLimitState);
 		SmartDashboard.putBoolean("Intakes are Rolling In", (liftController.get() > 0));
 		SmartDashboard.putNumber("Previous Lift Magnitude", previousMag);
-		
 		//Below: logic used during autonomous
 		if(liftCurrentlyControlling == false)
 		{
@@ -127,7 +137,7 @@ public class LiftSubsystem
 	@Schema(Utilities283.XBOX_LEFT_Y)
 	public void climb(double winchMagnitude)
 	{
-		if(winchUnlocked == true) //If both hooks are picked up by the lift
+		if (winchUnlocked == true) //If both hooks are picked up by the lift
 		{
 			winch.set(Utilities283.rescale(DEADZONE, 1.0, 0, 1.0, winchMagnitude)); //Allow control of 
 		}
@@ -144,17 +154,24 @@ public class LiftSubsystem
 	@Schema(Utilities283.XBOX_RIGHT_Y)
 	public void lift(double liftMagnitude)
 	{
-		System.out.println("Lift Magnitude = " + liftMagnitude);
+		liftMagnitude = Math.abs(liftMagnitude);
+		if (liftController.get() > liftMagnitude)
+		{
+			double drop = CONTROL_MAGNITUDE_DECREASE > liftController.get() ? liftController.get() : CONTROL_MAGNITUDE_DECREASE;
+			thisLoop = (Math.abs(liftController.get()) - drop) * (liftController.get() > 0 ? 1 : -1);
+		}
+			
+		System.out.println("Lift Magnitude = " + thisLoop);
 		//REMINDER: "FALSE" ON THE LIMIT SWITCH IS HIT
 		if (upperLimitSwitch.get() == false && this.prevLimitState == false) //every cycle after the first that the limit is hit
 		{
-			if (liftMagnitude > 0 && this.previousMag < 0) //no negative mag
+			if (thisLoop > 0 && this.previousMag < 0) //no negative mag
 			{
-				liftController.set(-1 * Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, liftMagnitude));
+				liftController.set(-1 * Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, thisLoop));
 			}
-			else if (liftMagnitude < 0 && this.previousMag > 0) // no positive mag
+			else if (thisLoop < 0 && this.previousMag > 0) // no positive mag
 			{
-				liftController.set(-1 * Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, liftMagnitude));
+				liftController.set(-1 * Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, thisLoop));
 			}
 			else
 			{
@@ -164,7 +181,7 @@ public class LiftSubsystem
 		else if (upperLimitSwitch.get() == false && this.prevLimitState == true) // first cycle limit is hit
 		{
 			liftController.set(0); //stops lift
-			previousMag = liftMagnitude; // sets previous magnitude to prevent breaking the lift
+			previousMag = thisLoop; // sets previous magnitude to prevent breaking the lift
 		}
 		else if (upperLimitSwitch.get() == true && this.prevLimitState == false) //limit is released
 		{
@@ -172,7 +189,7 @@ public class LiftSubsystem
 		}
 		else
 		{
-			liftController.set(-1 * Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, liftMagnitude));
+			liftController.set(-1 * Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, thisLoop));
 		}
 		prevLimitState = upperLimitSwitch.get();
 		//liftController.set(Utilities283.rescale(DEADZONE, 1.0, 0.0, 1.0, liftMagnitude));
