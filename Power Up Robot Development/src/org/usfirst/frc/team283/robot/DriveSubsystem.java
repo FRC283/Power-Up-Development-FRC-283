@@ -96,6 +96,10 @@ public class DriveSubsystem
 		//SmartDashboard.putNumber("Left Magnitude", leftMagnitude);
 		//SmartDashboard.putNumber("Right Magnitude", rightMagnitude);
 	}
+	/**
+	 * Drives a desired distance
+	 * @param distance - Distance desired to travel
+	 */
 	public void EncDrive(double distance)
 	{
 		int radius = 6;
@@ -105,6 +109,11 @@ public class DriveSubsystem
 		leftDriveDistanceInit(dots,0.5);
 		rightDriveDistanceInit(dots,0.5);
 	}
+	/**
+	 * Turns desired # of degrees
+	 * @param degrees - # of degrees to turn
+	 * @param direction - Direction to turn
+	 */
 	public void turn(double degrees, String direction)
 	{
 		int radius = 6;
