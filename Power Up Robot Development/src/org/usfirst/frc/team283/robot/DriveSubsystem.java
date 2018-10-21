@@ -96,6 +96,14 @@ public class DriveSubsystem
 		//SmartDashboard.putNumber("Left Magnitude", leftMagnitude);
 		//SmartDashboard.putNumber("Right Magnitude", rightMagnitude);
 	}
+	public void arcadeDrive(double throttleValue, double turnValue, boolean slowSpeed)
+	{
+		double leftMotor;
+		double rightMotor;
+		leftMotor = throttleValue + turnValue;
+		rightMotor = throttleValue - turnValue;
+		drive(leftMotor, rightMotor, slowSpeed);
+	}
 	/**
 	 * Passes commands to leftDriveDistanceInit and rightDriveDistanceInit
 	 * @param distance - Holds the distance desired in Inches
