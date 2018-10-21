@@ -96,6 +96,12 @@ public class DriveSubsystem
 		//SmartDashboard.putNumber("Left Magnitude", leftMagnitude);
 		//SmartDashboard.putNumber("Right Magnitude", rightMagnitude);
 	}
+	/**
+	 * Processes input to convert tank motor values into arcade drive values
+	 * @param throttleValue
+	 * @param turnValue
+	 * @param slowSpeed
+	 */
 	public void arcadeDrive(double throttleValue, double turnValue, boolean slowSpeed)
 	{
 		double leftMotor;
