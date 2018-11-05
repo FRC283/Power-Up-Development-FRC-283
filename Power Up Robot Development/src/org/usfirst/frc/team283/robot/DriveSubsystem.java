@@ -96,30 +96,31 @@ public class DriveSubsystem
 		//SmartDashboard.putNumber("Left Magnitude", leftMagnitude);
 		//SmartDashboard.putNumber("Right Magnitude", rightMagnitude);
 	}
+	
 	/**
 	 * Processes input to convert tank motor values into arcade drive values
 	 * @param throttleValue
 	 * @param turnValue
 	 * @param slowSpeed
+	 * @author Christian
 	 */
+	@Schema(Utilities283.LOGITECH_LEFT_Y)
+	@Schema(Utilities283.LOGITECH_RIGHT_X)
+	@Schema(value = Utilities283.LOGITECH_RIGHT_BUMPER, desc = SLOWSPEED + " speed")
 	public void arcadeDrive(double throttleValue, double turnValue, boolean slowSpeed)
 	{
-		double leftMotor;
-		double rightMotor;
+		double leftMotor, rightMotor;
 		leftMotor = throttleValue + turnValue;
 		rightMotor = throttleValue - turnValue;
 		drive(leftMotor, rightMotor, slowSpeed);
 	}
+	
 	/**
-	 * Passes commands to leftDriveDistanceInit and rightDriveDistanceInit
-	 * @param distance - Holds the distance desired in Inches
-	 * @param radius - Radius of the wheels
-	 * @param circ - Circumference of the wheels based on radius
-	 * @param resolution - Resolution of the Encoders
-	 * @param dots - Dots needed to reach distance in inches (distance/(circ/resolution))
+	 * Drives a desired distance
+	 * @param distance - Distance desired to travel
 	 * @author Christian
 	 */
-	public void EncDrive(double distance) //Calculates encoder "dots" needed to move # of inches
+	public void EncDrive(double distance)
 	{
 		int radius = 6;
 		double circ = Math.PI * radius * radius;
@@ -139,7 +140,7 @@ public class DriveSubsystem
 	 * @param dots - Dots needed to reach distance on arc length in inches (((degrees/360)*(2*PI*width))/(circ/resolution))
 	 * @author Christian
 	 */
-	public void turn(double degrees, String direction) // Calculates encoder "dots" needed to turn # of degrees
+	public void turn(double degrees, String direction)
 	{
 		int radius = 6;
 		double circ = Math.PI * radius * radius;
