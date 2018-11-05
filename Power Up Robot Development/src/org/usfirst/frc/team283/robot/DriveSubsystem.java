@@ -96,6 +96,24 @@ public class DriveSubsystem
 		//SmartDashboard.putNumber("Left Magnitude", leftMagnitude);
 		//SmartDashboard.putNumber("Right Magnitude", rightMagnitude);
 	}
+	
+	/**
+	 * Processes input to convert tank motor values into arcade drive values
+	 * @param throttleValue
+	 * @param turnValue
+	 * @param slowSpeed
+	 */
+	@Schema(Utilities283.LOGITECH_LEFT_Y)
+	@Schema(Utilities283.LOGITECH_RIGHT_X)
+	@Schema(value = Utilities283.LOGITECH_RIGHT_BUMPER, desc = SLOWSPEED + " speed")
+	public void arcadeDrive(double throttleValue, double turnValue, boolean slowSpeed)
+	{
+		double leftMotor, rightMotor;
+		leftMotor = throttleValue + turnValue;
+		rightMotor = throttleValue - turnValue;
+		drive(leftMotor, rightMotor, slowSpeed);
+	}
+	
 	/**
 	 * Drives a desired distance
 	 * @param distance - Distance desired to travel

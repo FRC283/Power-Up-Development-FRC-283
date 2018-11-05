@@ -681,7 +681,7 @@ public class Robot extends IterativeRobot
 	{
 		drivetrain.periodic();
 		liftSubsystem.periodic();
-		drivetrain.drive(logitech.getRawAxis(Constants.LEFT_Y), logitech.getRawAxis(Constants.RIGHT_Y), logitech.getRawButton(Constants.RIGHT_BUMPER));
+		drivetrain.arcadeDrive(logitech.getRawAxis(Constants.LEFT_Y), logitech.getRawAxis(Constants.RIGHT_Y), logitech.getRawButton(Constants.RIGHT_BUMPER));
 		drivetrain.shiftGear(logitech.getRawButton(Constants.RIGHT_STICK_BUTTON)); //Shifts the gearing to the
 		liftSubsystem.intake(logitech.getRawAxis(Constants.LEFT_TRIGGER) - logitech.getRawAxis(Constants.RIGHT_TRIGGER));
 		liftSubsystem.grip(logitech.getRawButton(Constants.LEFT_BUMPER));
