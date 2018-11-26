@@ -62,6 +62,10 @@ public class DriveSubsystem
 	//Actuators\Sensors
 	Spark leftController;
 	Spark rightController;
+	Spark leftFront;
+	Spark rightFront;
+	Spark leftBack;
+	Spark rightBack;
 	Encoder leftEnc;
 	Encoder rightEnc;
 	Solenoid gearShiftSol;
@@ -70,6 +74,13 @@ public class DriveSubsystem
 	{
 		leftController = new Spark(Constants.LEFT_DRIVE_CONTROLLER_PORT);
 		rightController = new Spark(Constants.RIGHT_DRIVE_CONTROLER_PORT);
+		//These controllers are for experimental mecanum drive
+		//----------------------------------------------------------------
+		leftFront = new Spark(Constants.LEFT_FRONT_DRIVE_CONTROLLER_PORT);
+		rightFront = new Spark(Constants.RIGHT_FRONT_DRIVE_CONTROLLER_PORT);
+		leftBack = new Spark(Constants.LEFT_BACK_DRIVE_CONTROLLER_PORT);
+		rightBack = new Spark(Constants.RIGHT_BACK_DRIVE_CONTROLLER_PORT);
+		//----------------------------------------------------------------
 		leftEnc = new Encoder(Constants.LEFT_DRIVE_ENCODER_PORT_A, Constants.LEFT_DRIVE_ENCODER_PORT_B);
 		rightEnc = new Encoder(Constants.RIGHT_DRIVE_ENCODER_PORT_A, Constants.RIGHT_DRIVE_ENCODER_PORT_B);
 		gearShiftSol = new Solenoid(Constants.DRIVE_GEARSHIFT_PORT);
@@ -110,8 +121,8 @@ public class DriveSubsystem
 	public void arcadeDrive(double throttleValue, double turnValue, boolean slowSpeed)
 	{
 		double leftMotor, rightMotor;
-		leftMotor = throttleValue + turnValue;
-		rightMotor = throttleValue - turnValue;
+		leftMotor = throttleValue - turnValue;
+		rightMotor = throttleValue + turnValue;
 		drive(leftMotor, rightMotor, slowSpeed);
 	}
 	

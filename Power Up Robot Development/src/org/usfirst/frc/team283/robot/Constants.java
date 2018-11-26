@@ -28,6 +28,13 @@ public class Constants
 		//PWM
 			public static final int LEFT_DRIVE_CONTROLLER_PORT = 0;
 			public static final int RIGHT_DRIVE_CONTROLER_PORT = 3;
+			//These are for experimental mecanum drive and are assigned to arbitrary ports
+			//-----------------------------------------------------------
+			public static final int LEFT_FRONT_DRIVE_CONTROLLER_PORT = 1;
+			public static final int RIGHT_FRONT_DRIVE_CONTROLLER_PORT = 2;
+			public static final int LEFT_BACK_DRIVE_CONTROLLER_PORT = 4;
+			public static final int RIGHT_BACK_DRIVE_CONTROLLER_PORT = 7;
+			//-----------------------------------------------------------
 			public static final int WINCH_CONTROLLER_PORT = 5;
 			public static final int LIFT_CONTROLLER_PORT = 9;
 			public static final int LEFT_ARM_CONTROLLER_PORT = 6;
