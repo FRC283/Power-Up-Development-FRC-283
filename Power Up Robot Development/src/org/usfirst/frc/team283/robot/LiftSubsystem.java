@@ -154,13 +154,16 @@ public class LiftSubsystem
 	@Schema(Utilities283.XBOX_RIGHT_Y)
 	public void lift(double liftMagnitude)
 	{
+		/*
 		liftMagnitude = Math.abs(liftMagnitude);
 		if (liftController.get() > liftMagnitude)
 		{
 			double drop = CONTROL_MAGNITUDE_DECREASE > liftController.get() ? liftController.get() : CONTROL_MAGNITUDE_DECREASE;
 			thisLoop = (Math.abs(liftController.get()) - drop) * (liftController.get() > 0 ? 1 : -1);
 		}
-			
+		*/
+		
+		thisLoop = liftMagnitude;
 		System.out.println("Lift Magnitude = " + thisLoop);
 		//REMINDER: "FALSE" ON THE LIMIT SWITCH IS HIT
 		if (upperLimitSwitch.get() == false && this.prevLimitState == false) //every cycle after the first that the limit is hit

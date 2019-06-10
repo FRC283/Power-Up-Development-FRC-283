@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends IterativeRobot 
@@ -22,62 +23,56 @@ public class Robot extends IterativeRobot
 		kAlwaysRight,			//Schnaar's Plan + Cube Drop: Right Side
 		kAlwaysLeft,			//Schnaar's Plan + Cube Drop: Left Side
 		kAutoQuest,				//Start in center. Turn left or right to get the cube in the switch
+		kListenToChooser, 		//Uses chosen mode from dashboard
 		kStop					//Does nothing
 	};
-	Joystick logitech;										   //
-	Joystick xbox;											   //
-	Timer autoTimer;										   //Used for various timing tasks
-	DriveSubsystem drivetrain;								   //
-	LiftSubsystem liftSubsystem;							   //
-	PowerDistributionPanel pdp = new PowerDistributionPanel(); //
-	private AutoMode aM = AutoMode.kAutoQuest;				   //The actual chosen value of our autonomous
-	String gameData;										   //Contains the data about the switch/scale colors given by FMS
+	Joystick logitech;											//
+	Joystick xbox;												//
+	Timer autoTimer;											//Used for various timing tasks
+	SendableChooser<AutoMode> autoChooser;								//
+	DriveSubsystem drivetrain;									//
+	LiftSubsystem liftSubsystem;								//
+	PowerDistributionPanel pdp = new PowerDistributionPanel();	//
+	private AutoMode aM = AutoMode.kListenToChooser;			//The actual chosen value of our autonomous
+	String gameData;											//Contains the data about the switch/scale colors given by FMS
+	
 	@Override
 	public void robotInit() 
 	{
-		//Set this to true if you just want to do the move forwards autonomous
 		drivetrain = new DriveSubsystem();
 		liftSubsystem = new LiftSubsystem();
 		autoTimer = new Timer();
 		logitech = new Joystick(Constants.DRIVER_CONTROLLER_PORT);
 		xbox = new Joystick(Constants.OPERATOR_CONTROLLER_PORT);
+		
 		gameData = DriverStation.getInstance().getGameSpecificMessage();
+		autoChooser = new SendableChooser<AutoMode>();
+		autoChooser.addObject("Always Left - Scores if the goal is on the left", AutoMode.kAlwaysLeft);
+		autoChooser.addObject("Always Right - Scores if the goal is on the right", AutoMode.kAlwaysRight);
+		autoChooser.addObject("Center - Start in center, score left or right respectively", AutoMode.kAutoQuest);
+		autoChooser.addObject("Simple Forwards - Rolls forwards for 3 seconds. Will cross baseline", AutoMode.kSimpleForwards);
+		autoChooser.addDefault("Nothing - Robot will do nothing", AutoMode.kStop);
+		SmartDashboard.putData("Options", autoChooser);
 	}
 	
 	@Override
 	public void autonomousInit()
 	{
-		
+		if (aM == AutoMode.kListenToChooser)	//If set to listenToChooser
+		{
+			aM = autoChooser.getSelected();		//Then the mode gets set what we chose
+		}
+		System.out.println("Auto set to :" + autoChooser.getSelected());
 	}
 	
-	@SuppressWarnings("incomplete-switch")
+	//@SuppressWarnings("incomplete-switch")
 	@Override
 	public void autonomousPeriodic() 
-	{
-		/*
-		if(gameData.length() > 0)
-		{
-			//Since the FMS returns YOUR field placement (as in alliance color setup) the value returned will be for your sides of the switch and scale from your perspective
-			if(gameData.charAt(0) == 'L' && gameData.charAt(1) == 'R')			//If FMS returns 'LRL' - We ignore last character
-			{
-				aM = AutoMode.kLeftRightLeft; 	//Set auto to 'LRL'
-			}
-			else if(gameData.charAt(0) == 'R' && gameData.charAt(1) == 'L')		//If FMS returns 'RLR' - We ignore last character
-			{
-				aM = AutoMode.kRightLeftRight;	//Set auto to 'RLR'
-			}
-			else if(gameData.charAt(0) == 'L' && gameData.charAt(1) == 'L') 	//If FMS returns 'LLL' - We ignore last character
-			{
-				aM = AutoMode.kAllLeft;			//Set auto to 'LLL'
-			}
-			else if(gameData.charAt(0) == 'R' && gameData.charAt(1) == 'R')		//If FMS returns 'RRR' - We ignore last character
-			{
-				aM = AutoMode.kAllRight;		//Set auto to 'RRR'
-			}
-		}
-		*/
+	{	
+		
 		drivetrain.periodic();
 		liftSubsystem.periodic();
+		
 		switch (aM) //Executes an autonomous based on the values of aM
 		{
 			case kSimpleForwards: //Simple timer-based forward movement
@@ -88,7 +83,7 @@ public class Robot extends IterativeRobot
 						autoStep++; //Next phase
 					break;
 					case 1:
-						drivetrain.drive(-0.50, -0.50, false); //Drive forwards at quarter power
+						drivetrain.drive(-0.60, -0.50, false); //Drive forwards at quarter power
 						if (autoTimer.get() > 3) //Wait until 3 seconds have passed
 						{
 							drivetrain.drive(0, 0, false); //Cut drive power
@@ -102,352 +97,6 @@ public class Robot extends IterativeRobot
 					break;
 				}
 			break;
-			/*
-			case kForwards:
-				switch (autoStep) //Determines the phase of the autonomous
-				{
-					case 0:
-						drivetrain.leftDriveDistanceInit(150); //Drive forwards
-						drivetrain.rightDriveDistanceInit(150);
-						autoStep++;
-					break;
-					case 1:
-						 if (drivetrain.periodic() == false) //Wait for the forward motion to finish (When it is false, it is done)
-						 {
-							 autoStep++; //When we reach target, advance step
-						 }
-					break;
-					case 2:
-						drivetrain.leftDriveDistanceInit(150); //Drive forwards
-						drivetrain.rightDriveDistanceInit(150);
-						autoStep++;
-					break;
-					case 3:
-						 if (drivetrain.periodic() == false) //Wait for the forward motion to finish (When it is false, it is done)
-						 {
-							 autoStep++; //When we reach target, advance step
-						 }
-					break;
-					case 4:
-						drivetrain.leftDriveDistanceInit(150); //Drive forwards
-						drivetrain.rightDriveDistanceInit(150);
-						autoStep++;
-					break;
-					case 5:
-						 if (drivetrain.periodic() == false) //Wait for the forward motion to finish (When it is false, it is done)
-						 {
-							 autoStep++; //When we reach target, advance step
-						 }
-					break;
-				}
-			break;
-			case kLeftRightLeft:
-				switch (autoStep) //Determines the phase of the autonomous
-				{
-					case 0:
-						drivetrain.leftDriveDistanceInit(150); //Drive forwards
-						drivetrain.rightDriveDistanceInit(150);
-						autoStep++;
-					break;
-					case 1:
-						 if (drivetrain.periodic() == false) //Wait for the forward motion to finish (When it is false, it is done)
-						 {
-							 autoStep++; //When we reach target, advance step
-						 }
-					break;
-					case 2:
-						drivetrain.leftDriveDistanceInit(150); //Drive forwards
-						drivetrain.rightDriveDistanceInit(150);
-						autoStep++;
-					break;
-					case 3:
-						 if (drivetrain.periodic() == false) //Wait for the forward motion to finish (When it is false, it is done)
-						 {
-							 autoStep++; //When we reach target, advance step
-						 }
-					break;
-					case 4:
-						drivetrain.leftDriveDistanceInit(150); //Drive forwards
-						drivetrain.rightDriveDistanceInit(150);
-						autoStep++;
-					break;
-					case 5:
-						 if (drivetrain.periodic() == false) //Wait for the forward motion to finish (When it is false, it is done)
-						 {
-							 autoStep++; //When we reach target, advance step
-						 }
-					break;
-				}
-			break;
-			case kRightLeftRight:
-				switch (autoStep) //Determines the phase of the autonomous
-				{
-					case 0:
-						drivetrain.leftDriveDistanceInit(150); //Drive forwards
-						drivetrain.rightDriveDistanceInit(150);
-						autoStep++;
-					break;
-					case 1:
-						 if (drivetrain.periodic() == false) //Wait for the forward motion to finish (When it is false, it is done)
-						 {
-							 autoStep++; //When we reach target, advance step
-						 }
-					break;
-					case 2:
-						drivetrain.leftDriveDistanceInit(150); //Drive forwards
-						drivetrain.rightDriveDistanceInit(150);
-						autoStep++;
-					break;
-					case 3:
-						 if (drivetrain.periodic() == false) //Wait for the forward motion to finish (When it is false, it is done)
-						 {
-							 autoStep++; //When we reach target, advance step
-						 }
-					break;
-					case 4:
-						drivetrain.leftDriveDistanceInit(150); //Drive forwards
-						drivetrain.rightDriveDistanceInit(150);
-						autoStep++;
-					break;
-					case 5:
-						 if (drivetrain.periodic() == false) //Wait for the forward motion to finish (When it is false, it is done)
-						 {
-							 autoStep++; //When we reach target, advance step
-						 }
-					break;
-				}
-			break;
-			case kAllLeft:
-				switch (autoStep) //Determines the phase of the autonomous
-				{
-					case 0:
-						drivetrain.leftDriveDistanceInit(150); //Drive forwards
-						drivetrain.rightDriveDistanceInit(150);
-						autoStep++;
-					break;
-					case 1:
-						 if (drivetrain.periodic() == false) //Wait for the forward motion to finish (When it is false, it is done)
-						 {
-							 autoStep++; //When we reach target, advance step
-						 }
-					break;
-					case 2:
-						drivetrain.leftDriveDistanceInit(150); //Drive forwards
-						drivetrain.rightDriveDistanceInit(150);
-						autoStep++;
-					break;
-					case 3:
-						 if (drivetrain.periodic() == false) //Wait for the forward motion to finish (When it is false, it is done)
-						 {
-							 autoStep++; //When we reach target, advance step
-						 }
-					break;
-					case 4:
-						drivetrain.leftDriveDistanceInit(150); //Drive forwards
-						drivetrain.rightDriveDistanceInit(150);
-						autoStep++;
-					break;
-					case 5:
-						 if (drivetrain.periodic() == false) //Wait for the forward motion to finish (When it is false, it is done)
-						 {
-							 autoStep++; //When we reach target, advance step
-						 }
-					break;
-					case 6:
-						drivetrain.leftDriveDistanceInit(150); //Drive forwards
-						drivetrain.rightDriveDistanceInit(150);
-						autoStep++;
-					break;
-					case 7:
-						 if (drivetrain.periodic() == false) //Wait for the forward motion to finish (When it is false, it is done)
-						 {
-							 autoStep++; //When we reach target, advance step
-						 }
-					break;
-					case 8:
-						drivetrain.leftDriveDistanceInit(150); //Drive forwards
-						drivetrain.rightDriveDistanceInit(150);
-						autoStep++;
-					break;
-					case 9:
-						 if (drivetrain.periodic() == false) //Wait for the forward motion to finish (When it is false, it is done)
-						 {
-							 autoStep++; //When we reach target, advance step
-						 }
-					break;
-					case 10:
-						drivetrain.leftDriveDistanceInit(150); //Drive forwards
-						drivetrain.rightDriveDistanceInit(150);
-						autoStep++;
-					break;
-					case 11:
-						 if (drivetrain.periodic() == false) //Wait for the forward motion to finish (When it is false, it is done)
-						 {
-							 autoStep++; //When we reach target, advance step
-						 }
-					break;
-					case 12:
-						drivetrain.leftDriveDistanceInit(150); //Drive forwards
-						drivetrain.rightDriveDistanceInit(150);
-						autoStep++;
-					break;
-					case 13:
-						 if (drivetrain.periodic() == false) //Wait for the forward motion to finish (When it is false, it is done)
-						 {
-							 autoStep++; //When we reach target, advance step
-						 }
-					break;
-					case 14:
-						drivetrain.leftDriveDistanceInit(150); //Drive forwards
-						drivetrain.rightDriveDistanceInit(150);
-						autoStep++;
-					break;
-					case 15:
-						 if (drivetrain.periodic() == false) //Wait for the forward motion to finish (When it is false, it is done)
-						 {
-							 autoStep++; //When we reach target, advance step
-						 }
-					break;
-					case 16:
-						drivetrain.leftDriveDistanceInit(150); //Drive forwards
-						drivetrain.rightDriveDistanceInit(150);
-						autoStep++;
-					break;
-					case 17:
-						 if (drivetrain.periodic() == false) //Wait for the forward motion to finish (When it is false, it is done)
-						 {
-							 autoStep++; //When we reach target, advance step
-						 }
-					break;
-					case 18:
-						drivetrain.leftDriveDistanceInit(150); //Drive forwards
-						drivetrain.rightDriveDistanceInit(150);
-						autoStep++;
-					break;
-					case 19:
-						 if (drivetrain.periodic() == false) //Wait for the forward motion to finish (When it is false, it is done)
-						 {
-							 autoStep++; //When we reach target, advance step
-						 }
-					break;
-				}
-			break;
-			case kAllRight:
-				switch (autoStep) //Determines the phase of the autonomous
-				{
-				case 0:
-					drivetrain.leftDriveDistanceInit(150); //Drive forwards
-					drivetrain.rightDriveDistanceInit(150);
-					autoStep++;
-				break;
-				case 1:
-					 if (drivetrain.periodic() == false) //Wait for the forward motion to finish (When it is false, it is done)
-					 {
-						 autoStep++; //When we reach target, advance step
-					 }
-				break;
-				case 2:
-					drivetrain.leftDriveDistanceInit(150); //Drive forwards
-					drivetrain.rightDriveDistanceInit(150);
-					autoStep++;
-				break;
-				case 3:
-					 if (drivetrain.periodic() == false) //Wait for the forward motion to finish (When it is false, it is done)
-					 {
-						 autoStep++; //When we reach target, advance step
-					 }
-				break;
-				case 4:
-					drivetrain.leftDriveDistanceInit(150); //Drive forwards
-					drivetrain.rightDriveDistanceInit(150);
-					autoStep++;
-				break;
-				case 5:
-					 if (drivetrain.periodic() == false) //Wait for the forward motion to finish (When it is false, it is done)
-					 {
-						 autoStep++; //When we reach target, advance step
-					 }
-				break;
-				case 6:
-					drivetrain.leftDriveDistanceInit(150); //Drive forwards
-					drivetrain.rightDriveDistanceInit(150);
-					autoStep++;
-				break;
-				case 7:
-					 if (drivetrain.periodic() == false) //Wait for the forward motion to finish (When it is false, it is done)
-					 {
-						 autoStep++; //When we reach target, advance step
-					 }
-				break;
-				case 8:
-					drivetrain.leftDriveDistanceInit(150); //Drive forwards
-					drivetrain.rightDriveDistanceInit(150);
-					autoStep++;
-				break;
-				case 9:
-					 if (drivetrain.periodic() == false) //Wait for the forward motion to finish (When it is false, it is done)
-					 {
-						 autoStep++; //When we reach target, advance step
-					 }
-				break;
-				case 10:
-					drivetrain.leftDriveDistanceInit(150); //Drive forwards
-					drivetrain.rightDriveDistanceInit(150);
-					autoStep++;
-				break;
-				case 11:
-					 if (drivetrain.periodic() == false) //Wait for the forward motion to finish (When it is false, it is done)
-					 {
-						 autoStep++; //When we reach target, advance step
-					 }
-				break;
-				case 12:
-					drivetrain.leftDriveDistanceInit(150); //Drive forwards
-					drivetrain.rightDriveDistanceInit(150);
-					autoStep++;
-				break;
-				case 13:
-					 if (drivetrain.periodic() == false) //Wait for the forward motion to finish (When it is false, it is done)
-					 {
-						 autoStep++; //When we reach target, advance step
-					 }
-				break;
-				case 14:
-					drivetrain.leftDriveDistanceInit(150); //Drive forwards
-					drivetrain.rightDriveDistanceInit(150);
-					autoStep++;
-				break;
-				case 15:
-					 if (drivetrain.periodic() == false) //Wait for the forward motion to finish (When it is false, it is done)
-					 {
-						 autoStep++; //When we reach target, advance step
-					 }
-				break;
-				case 16:
-					drivetrain.leftDriveDistanceInit(150); //Drive forwards
-					drivetrain.rightDriveDistanceInit(150);
-					autoStep++;
-				break;
-				case 17:
-					 if (drivetrain.periodic() == false) //Wait for the forward motion to finish (When it is false, it is done)
-					 {
-						 autoStep++; //When we reach target, advance step
-					 }
-				break;
-				case 18:
-					drivetrain.leftDriveDistanceInit(150); //Drive forwards
-					drivetrain.rightDriveDistanceInit(150);
-					autoStep++;
-				break;
-				case 19:
-					 if (drivetrain.periodic() == false) //Wait for the forward motion to finish (When it is false, it is done)
-					 {
-						 autoStep++; //When we reach target, advance step
-					 }
-				break;
-				}
-			break;
-			*/
 			case kAlwaysLeft:
 				switch(autoStep)
 				{
@@ -466,14 +115,14 @@ public class Robot extends IterativeRobot
 							}
 							else //Otherwise
 							{
-								drivetrain.drive(-0.8, -0.5, false); //Drive forwards
+								drivetrain.drive(-0.65, -0.65, false); //Drive forwards
 								autoTimer.start();
 								autoStep++;
 							}
 						}
 					break;
 					case 1:
-						if (autoTimer.get() > 1) //After 1 second of driving forwards...
+						if (autoTimer.get() > 0.8) //After 1 second of driving forwards...
 						{
 							System.out.println("Successfully drove forwards");
 							autoStep++; //Next step
@@ -526,14 +175,14 @@ public class Robot extends IterativeRobot
 							}
 							else //Otherwise
 							{
-								drivetrain.drive(-0.5, -0.5, false); //Drive forwards
+								drivetrain.drive(-0.65, -0.65, false); //Drive forwards
 								autoTimer.start();
 								autoStep++;
 							}
 						}
 					break;
 					case 1:
-						if (autoTimer.get() > 1) //After 1 second of driving forwards...
+						if (autoTimer.get() > 0.8) //After 1 second of driving forwards...
 						{
 							System.out.println("Successfully drove forwards");
 							autoStep++; //Next step
@@ -579,42 +228,42 @@ public class Robot extends IterativeRobot
 							autoStep++;
 							if(gameData.charAt(0) == 'L')
 							{
-								drivetrain.drive(-0.55, -0.70, false);
+								drivetrain.drive(-0.35, -0.65, false);
 							}
-							else if(gameData.charAt(0) == 'R')
+							else if (gameData.charAt(0) == 'R')
 							{
-								drivetrain.drive(-0.75, -0.55, false);
+								drivetrain.drive(-0.75, -0.65, false);
 							}
 							autoTimer.stop();
 							autoTimer.reset();
 							autoTimer.start();
 						}
 					break;
-					/*case 1: //Keep going forward for 3 seconds the jolt backward
-						autoStep++						if(autoTimer.get() > 3)
+					case 1:
+						if (gameData.charAt(0) == 'L')
 						{
-							drivetrain.drive(0.8, 0.8, false);
+							if (autoTimer.get() > 1)
+							{
+								drivetrain.drive(-0.8, -0.4, false);
+								autoStep++;						
+								autoTimer.stop();
+								autoTimer.reset();
+								autoTimer.start();
+							}
 						}
-						autoTimer.stop();
-						autoTimer.reset();
-						autoTimer.start();
-					break;*/
-					case 1: //Jolting backward then stopping to finish Auto
-						//System.out.println("Time: " + autoTimer.get());
-						if(autoTimer.get() > 1.4)
-						{
-							drivetrain.drive(0, 0, false);
-							autoTimer.stop();
-							autoTimer.reset();
-						}
+					break;
+					case 2:
+						//Do nothing
 					break;
 				}
 			break;
 			case kStop:
-				//Do nothing
+				//Literally does nothing, which is good
+				//KEEP THIS HERE so that we can choose to do nothing
 			break;
 			default:
 				//Do nothing
+				//This case is only used if aM is incorrectly assigned
 			break;
 		}
 	}
@@ -628,19 +277,24 @@ public class Robot extends IterativeRobot
 	@Override
 	public void teleopPeriodic()
 	{
+		
 		drivetrain.periodic();
 		liftSubsystem.periodic();
+		
 		drivetrain.drive(logitech.getRawAxis(Constants.LEFT_Y), logitech.getRawAxis(Constants.RIGHT_Y), logitech.getRawButton(Constants.RIGHT_BUMPER));
-		drivetrain.shiftGear(logitech.getRawButton(Constants.RIGHT_STICK_BUTTON)); //Shifts the gearing to the
+		drivetrain.shiftGear(logitech.getRawButton(Constants.RIGHT_STICK_BUTTON));
+		
 		liftSubsystem.intake(logitech.getRawAxis(Constants.LEFT_TRIGGER) - logitech.getRawAxis(Constants.RIGHT_TRIGGER));
 		liftSubsystem.grip(logitech.getRawButton(Constants.LEFT_BUMPER));
 		liftSubsystem.unlockWinch(xbox.getRawButton(Constants.LEFT_STICK_BUTTON) && xbox.getRawButton(Constants.RIGHT_STICK_BUTTON)); //If the passed button is true, activates function, otherwise, does nothing
 		liftSubsystem.climb(xbox.getRawAxis(Constants.LEFT_Y));
 		liftSubsystem.lift(xbox.getRawAxis(Constants.RIGHT_Y));
+		
 		SmartDashboard.putNumber("Logitech Left Y: ", logitech.getRawAxis(Constants.LEFT_Y));
 		SmartDashboard.putNumber("Logitech Right Y: ", logitech.getRawAxis(Constants.RIGHT_Y));
 		SmartDashboard.putNumber("Xbox Right Y: ", xbox.getRawAxis(Constants.RIGHT_Y));
 		SmartDashboard.putNumber("Xbox Right Trigger: ", xbox.getRawAxis(Constants.RIGHT_TRIGGER));
 		SmartDashboard.putNumber("Xbox Left Trigger: ", xbox.getRawAxis(Constants.LEFT_TRIGGER));
+		
 	}
 }

@@ -89,8 +89,10 @@ public class DriveSubsystem
 		}
 		leftController.set(-1 * (leftMagnitude) * (slowSpeed ? SLOWSPEED : 1));
 		rightController.set((rightMagnitude) * (slowSpeed ? SLOWSPEED : 1));
-		//SmartDashboard.putNumber("Left Magnitude", leftMagnitude);
-		//SmartDashboard.putNumber("Right Magnitude", rightMagnitude);
+		SmartDashboard.putNumber("Left Magnitude", leftMagnitude);
+		SmartDashboard.putNumber("Right Magnitude", rightMagnitude);
+		System.out.println("Right Magnitude" + rightMagnitude);
+		System.out.println("Left Magnitude" + leftMagnitude);
 	}
 	
 	/**
@@ -178,7 +180,11 @@ public class DriveSubsystem
 	
 	public boolean periodic()
 	{
-		driveDistancePeriodic();
+		//driveDistancePeriodic();
+		SmartDashboard.putNumber("Left Drive Encoder", leftEnc.get());
+		SmartDashboard.putNumber("Right Drive Encoder", rightEnc.get());
+		System.out.println("Left Drive Encoder: " + leftEnc.get());
+		System.out.println("Right Drive Encoder: " + rightEnc.get());
 		SmartDashboard.putBoolean("High Speed", gearShiftSol.get());
 		if(rightCurrentlyControlling == false && leftCurrentlyControlling == false)
 		{
